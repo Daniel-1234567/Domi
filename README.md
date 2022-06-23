@@ -41,17 +41,17 @@
 	备用地址：<a target="_blank" href="https://jpom-docs.keepbx.cn">https://jpom-docs.keepbx.cn</a> | <a target="_blank" href="https://jpom.keepbx.cn/">https://jpom.keepbx.cn/</a>
 </p>
 
-## 😭 日常开发中，您是否有以下痛点？
+## 😭 Do you have the following pain points in daily development?
 
-- 团队中没有专门的运维，开发还要做运维的活，需要自己手动构建、部署项目。
-- 不同的项目有不同的构建、部署命令。
-- 有开发、测试、生产等多环境打包的需求。
-- 需要同时监控多个项目的运行状态。
-- 需要下载 SSH 工具远程连接服务器。
-- 需要下载 FTP 工具传输文件到服务器。
-- 多台服务器时，在不同电脑之间账号密码同步不方便。
-- 想使用一些自动化工具，但是对服务器性能太高，搭建太麻烦。
-- 对自动化工具有个性化的需求，想自己修改项目，但是市面上的工具太复杂了。
+- There is no special operation and maintenance in the team, and the development needs to do the operation and maintenance work, and you need to manually build and deploy the project yourself.
+- Different projects have different build and deploy commands.
+- There are requirements for multi-environment packaging such as development, testing, and production.
+- Need to monitor the running status of multiple projects at the same time.
+- You need to download the SSH tool to connect to the server remotely.
+- Need to download FTP tool to transfer files to server.
+- When there are multiple servers, it is inconvenient to synchronize account passwords between different computers.
+- I want to use some automation tools, but the performance of the server is too high and it is too troublesome to build.
+- I have individual needs for automation tools and want to modify the project myself, but the tools on the market are too complicated.
 
 > 如果是分布式的项目，以上步骤则更加繁琐。
 >
