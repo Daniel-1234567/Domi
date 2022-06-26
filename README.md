@@ -4,7 +4,7 @@
 	</a>
 </p>
 <p align="center">
-	<strong>简而轻的低侵入式在线构建、自动部署、日常运维、项目监控软件</strong>
+	<strong>Simple and lightweight low-intrusive online construction, automatic deployment, daily operation and maintenance, project monitoring software</strong>
 </p>
 
 <p align="center">
