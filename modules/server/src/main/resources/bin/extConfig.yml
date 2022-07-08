@@ -18,8 +18,10 @@ jpom:
   subTitle:
   # 登录页名称
   loginTitle:
-  # logo 文件路径（绝对路径、http） jpg、png、gif、
+  # logo 文件路径（绝对路径、http） 文件限制后缀:jpg、png、gif
   logoFile:
+  # icon 文件路径（绝对路径、http），建议规格 12×12、16×16、24×24、32×32、48×48 , 文件限制后缀 ico、png
+  iconFile:
   # 禁用页面引导导航
   disabledGuide: false
   # 禁用登录图形验证码 （一般用于服务器没有字体或者开启了两部验证后才关闭图形验证码）
@@ -80,6 +82,10 @@ build:
   itemMaxHistoryCount: 50
   # 构建命令是否检查 存在删除命令
   checkDeleteCommand: true
+  # 构建线程池大小,小于 1 则为不限制，默认大小为 5
+  poolSize: 5
+  # 构建任务等待数量，超过此数量将取消构建任务，值最小为 1
+  poolWaitQueue: 10
 ssh:
   # ssh 执行命令的 默认加载的环境变量
   initEnv: source /etc/profile && source ~/.bash_profile && source ~/.bashrc

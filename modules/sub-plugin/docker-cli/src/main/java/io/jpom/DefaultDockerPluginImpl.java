@@ -25,6 +25,8 @@ package io.jpom;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.io.unit.DataSizeUtil;
+import cn.hutool.core.lang.Tuple;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -34,13 +36,16 @@ import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.InvocationBuilder;
 import io.jpom.plugin.IDefaultPlugin;
 import io.jpom.plugin.PluginConfig;
+import lombok.SneakyThrows;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -106,8 +111,106 @@ public class DefaultDockerPluginImpl implements IDefaultPlugin {
                 return null;
             case "listNetworks":
                 return this.listNetworksCmd(parameter);
+            case "stats":
+                return this.statsCmd(parameter);
+            case "inspectContainer":
+                return this.inspectContainerCmd(parameter);
+            case "updateContainer":
+                return this.updateContainerCmd(parameter);
             default:
                 throw new IllegalArgumentException("不支持的类型");
+        }
+    }
+
+    private Map<String, JSONObject> statsCmd(Map<String, Object> parameter) throws IOException {
+        try (DockerClient dockerClient = DockerUtil.build(parameter)) {
+            String containerId = (String) parameter.get("containerId");
+            List<String> split = StrUtil.split(containerId, StrUtil.COMMA);
+            return split.stream().map(s -> {
+                Statistics statistics = dockerClient.statsCmd(s).exec(new InvocationBuilder.AsyncResultCallback<Statistics>() {
+                    @SneakyThrows
+                    @Override
+                    public void onNext(Statistics object) {
+                        super.onNext(object);
+                        super.close();
+                    }
+                }).awaitResult();
+                return new Tuple(s, JSONObject.toJSON(statistics));
+            }).collect(Collectors.toMap(tuple -> tuple.get(0), tuple -> tuple.get(1)));
+        }
+    }
+
+    private JSONObject updateContainerCmd(Map<String, Object> parameter) throws IOException {
+        try (DockerClient dockerClient = DockerUtil.build(parameter)) {
+            String containerId = (String) parameter.get("containerId");
+            UpdateContainerCmd updateContainerCmd = dockerClient.updateContainerCmd(containerId);
+            //
+            Optional.ofNullable(parameter.get("cpusetCpus"))
+                .map(StrUtil::toStringOrNull)
+                .ifPresent(updateContainerCmd::withCpusetCpus);
+
+            Optional.ofNullable(parameter.get("cpusetMems"))
+                .map(StrUtil::toStringOrNull)
+                .ifPresent(updateContainerCmd::withCpusetMems);
+
+            Optional.ofNullable(parameter.get("cpuPeriod"))
+                .map(Convert::toInt)
+                .ifPresent(updateContainerCmd::withCpuPeriod);
+
+            Optional.ofNullable(parameter.get("cpuQuota"))
+                .map(Convert::toInt)
+                .ifPresent(updateContainerCmd::withCpuQuota);
+
+            Optional.ofNullable(parameter.get("cpuShares"))
+                .map(Convert::toInt)
+                .ifPresent(updateContainerCmd::withCpuShares);
+
+            Optional.ofNullable(parameter.get("blkioWeight"))
+                .map(Convert::toInt)
+                .ifPresent(updateContainerCmd::withBlkioWeight);
+
+            Optional.ofNullable(parameter.get("memoryReservation"))
+                .map(StrUtil::toStringOrNull)
+                .map(s -> {
+                    if (StrUtil.isEmpty(s)) {
+                        return null;
+                    }
+                    return DataSizeUtil.parse(s);
+                })
+                .ifPresent(updateContainerCmd::withMemoryReservation);
+
+            Optional.ofNullable(parameter.get("memory"))
+                .map(StrUtil::toStringOrNull)
+                .map(s -> {
+                    if (StrUtil.isEmpty(s)) {
+                        return null;
+                    }
+                    return DataSizeUtil.parse(s);
+                })
+                .ifPresent(updateContainerCmd::withMemory);
+
+            //            updateContainerCmd.withKernelMemory(DataSizeUtil.parse("10M"));
+
+            Optional.ofNullable(parameter.get("memorySwap"))
+                .map(StrUtil::toStringOrNull)
+                .map(s -> {
+                    if (StrUtil.isEmpty(s)) {
+                        return null;
+                    }
+                    return DataSizeUtil.parse(s);
+                })
+                .ifPresent(updateContainerCmd::withMemorySwap);
+
+            UpdateContainerResponse updateContainerResponse = updateContainerCmd.exec();
+            return (JSONObject) JSONObject.toJSON(updateContainerResponse);
+        }
+    }
+
+    private JSONObject inspectContainerCmd(Map<String, Object> parameter) throws IOException {
+        try (DockerClient dockerClient = DockerUtil.build(parameter)) {
+            String containerId = (String) parameter.get("containerId");
+            InspectContainerResponse containerResponse = dockerClient.inspectContainerCmd(containerId).withSize(true).exec();
+            return (JSONObject) JSONObject.toJSON(containerResponse);
         }
     }
 

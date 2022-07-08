@@ -274,12 +274,13 @@
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
-import { updatePwd, sendEmailCode, editUserInfo, getUserInfo, myWorkspace, closeMfa, generateMfa, bindMfa } from "@/api/user";
+import {mapGetters} from "vuex";
+import {bindMfa, closeMfa, editUserInfo, generateMfa, getUserInfo, myWorkspace, sendEmailCode, updatePwd} from "@/api/user";
 import QRCode from "qrcodejs2";
 import sha1 from "sha1";
 import Vue from "vue";
-import { MFA_APP_TIP_ARRAY } from "@/utils/const";
+import {MFA_APP_TIP_ARRAY} from "@/utils/const";
+
 export default {
   data() {
     return {

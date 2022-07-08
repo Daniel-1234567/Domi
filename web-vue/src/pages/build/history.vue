@@ -1,20 +1,56 @@
 <template>
   <div class="full-content">
     <!-- <div ref="filter" class="filter">
-     
-      <a-button type="primary" @click="handleFilter">刷新</a-button> 
+
+      <a-button type="primary" @click="handleFilter">刷新</a-button>
     </div> -->
     <!-- 数据表格 -->
     <a-table :data-source="list" size="middle" :columns="columns" :pagination="pagination" bordered rowKey="id" @change="change" :row-selection="rowSelection">
       <template slot="title">
         <a-space>
-          <a-select show-search option-filter-prop="children" v-model="listQuery.buildDataId" allowClear placeholder="请选择构建名称" class="search-input-item">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            show-search
+            option-filter-prop="children"
+            v-model="listQuery.buildDataId"
+            allowClear
+            placeholder="请选择构建名称"
+            class="search-input-item"
+          >
             <a-select-option v-for="build in buildList" :key="build.id">{{ build.name }}</a-select-option>
           </a-select>
-          <a-select show-search option-filter-prop="children" v-model="listQuery.status" allowClear placeholder="请选择状态" class="search-input-item">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            show-search
+            option-filter-prop="children"
+            v-model="listQuery.status"
+            allowClear
+            placeholder="请选择状态"
+            class="search-input-item"
+          >
             <a-select-option v-for="(val, key) in statusMap" :key="key">{{ val }}</a-select-option>
           </a-select>
-          <a-select show-search option-filter-prop="children" v-model="listQuery.triggerBuildType" allowClear placeholder="请选择触发类型" class="search-input-item">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            show-search
+            option-filter-prop="children"
+            v-model="listQuery.triggerBuildType"
+            allowClear
+            placeholder="请选择触发类型"
+            class="search-input-item"
+          >
             <a-select-option v-for="(val, key) in triggerBuildTypeMap" :key="key">{{ val }}</a-select-option>
           </a-select>
           <a-range-picker class="search-input-item" :show-time="{ format: 'HH:mm:ss' }" format="YYYY-MM-DD HH:mm:ss" @change="onchangeTime" />
@@ -105,10 +141,11 @@
 </template>
 <script>
 import BuildLog from "./log";
-import { geteBuildHistory, getBuildListAll, downloadBuildLog, rollback, deleteBuildHistory, releaseMethodMap, statusMap, downloadBuildFile, triggerBuildTypeMap } from "@/api/build-info";
-import { parseTime, formatDuration } from "@/utils/time";
+import {deleteBuildHistory, downloadBuildFile, downloadBuildLog, getBuildListAll, geteBuildHistory, releaseMethodMap, rollback, statusMap, triggerBuildTypeMap} from "@/api/build-info";
+import {formatDuration, parseTime} from "@/utils/time";
 
-import { COMPUTED_PAGINATION, CHANGE_PAGE, PAGE_DEFAULT_LIST_QUERY } from "@/utils/const";
+import {CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY} from "@/utils/const";
+
 export default {
   components: {
     BuildLog,
@@ -194,7 +231,7 @@ export default {
       });
     },
     // 分页、排序、筛选变化时触发
-    changef(pagination, filters, sorter) {
+    change(pagination, filters, sorter) {
       this.listQuery = CHANGE_PAGE(this.listQuery, { pagination, sorter });
       this.loadData();
     },

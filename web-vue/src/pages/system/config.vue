@@ -67,6 +67,7 @@
         </a-form-model-item>
       </a-form-model>
     </a-tab-pane>
+    <!-- 节点白名单分发 -->
     <a-tab-pane key="3">
       <span slot="tab">
         <a-icon type="folder" />
@@ -75,7 +76,18 @@
       <a-alert :message="`一键分发同步多个节点的白名单配置,不用挨个配置。配置后会覆盖之前的配置,一般用于节点环境一致的情况`" style="margin-top: 10px; margin-bottom: 20px" banner />
       <a-form-model ref="editWhiteForm" :model="tempWhite" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
         <a-form-model-item label="分发节点">
-          <a-select show-search option-filter-prop="children" placeholder="请选择分发到的节点" mode="multiple" v-model="tempWhite.chooseNode">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            show-search
+            option-filter-prop="children"
+            placeholder="请选择分发到的节点"
+            mode="multiple"
+            v-model="tempWhite.chooseNode"
+          >
             <a-select-option v-for="item in nodeList" :key="item.id" :value="item.id">
               {{ item.name }}
             </a-select-option>
@@ -127,6 +139,7 @@
         </a-form-model-item>
       </a-form-model>
     </a-tab-pane>
+    <!-- 节点系统配置分发 -->
     <a-tab-pane key="4">
       <span slot="tab">
         <a-icon type="gateway" />
@@ -138,7 +151,19 @@
           <a-col :span="11">
             <a-row type="flex" justify="center">
               <a-form-model-item label="模版节点">
-                <a-select style="width: 30vw" show-search @change="changeTemplateNode" option-filter-prop="children" placeholder="请选择模版节点" v-model="tempNodeConfig.templateNodeId">
+                <a-select
+                  :getPopupContainer="
+                    (triggerNode) => {
+                      return triggerNode.parentNode || document.body;
+                    }
+                  "
+                  style="width: 30vw"
+                  show-search
+                  @change="changeTemplateNode"
+                  option-filter-prop="children"
+                  placeholder="请选择模版节点"
+                  v-model="tempNodeConfig.templateNodeId"
+                >
                   <a-select-option v-for="item in nodeList" :key="item.id" :value="item.id">
                     {{ item.name }}
                   </a-select-option>
@@ -152,7 +177,19 @@
           <a-col :span="11">
             <a-row type="flex" justify="center">
               <a-form-model-item label="分发节点">
-                <a-select style="width: 30vw" show-search option-filter-prop="children" placeholder="请选择分发到的节点" mode="multiple" v-model="tempNodeConfig.chooseNode">
+                <a-select
+                  :getPopupContainer="
+                    (triggerNode) => {
+                      return triggerNode.parentNode || document.body;
+                    }
+                  "
+                  style="width: 30vw"
+                  show-search
+                  option-filter-prop="children"
+                  placeholder="请选择分发到的节点"
+                  mode="multiple"
+                  v-model="tempNodeConfig.chooseNode"
+                >
                   <a-select-option v-for="item in nodeList" :key="item.id" :value="item.id">
                     {{ item.name }}
                   </a-select-option>
@@ -188,6 +225,7 @@
         </a-row>
       </a-form-model>
     </a-tab-pane>
+    <!-- 菜单配置 -->
     <a-tab-pane key="5">
       <span slot="tab">
         <a-icon type="menu" />
@@ -226,14 +264,92 @@
         </a-form-model-item>
       </a-form-model>
     </a-tab-pane>
+    <!-- 全局代理 -->
+    <a-tab-pane key="6">
+      <span slot="tab">
+        <a-icon type="api" />
+        全局代理
+      </span>
+      <a-alert :message="`全局代理配置后将对服务端的网络生效，代理实现方式：ProxySelector`" style="margin-top: 10px; margin-bottom: 20px" banner />
+      <a-row justify="center" type="flex">
+        <a-form-model layout="inline" ref="editProxyForm" :model="proxyConfigData">
+          <a-row v-for="(item, index) in proxyConfigData.globalProxy" :key="index">
+            <a-form-model-item label="通配符" prop="pattern">
+              <a-input style="width: 30vw" :maxLength="200" v-model="item.pattern" placeholder="地址通配符,* 表示所有地址都将使用代理"> </a-input>
+            </a-form-model-item>
+            <a-form-model-item label="代理" prop="httpProxy">
+              <a-input style="width: 30vw" v-model="item.proxyAddress" placeholder="代理地址 (127.0.0.1:8888)">
+                <a-select slot="addonBefore" v-model="item.proxyType" style="width: 100px">
+                  <a-select-option value="HTTP">HTTP</a-select-option>
+                  <a-select-option value="SOCKS">SOCKS</a-select-option>
+                  <a-select-option value="DIRECT">DIRECT</a-select-option>
+                </a-select>
+              </a-input>
+            </a-form-model-item>
+            <a-form-model-item>
+              <a-button
+                type="danger"
+                @click="
+                  () => {
+                    proxyConfigData.globalProxy && proxyConfigData.globalProxy.splice(index, 1);
+                  }
+                "
+                size="small"
+                :disabled="proxyConfigData.globalProxy && proxyConfigData.globalProxy.length <= 1"
+              >
+                删除
+              </a-button>
+            </a-form-model-item>
+          </a-row>
+          <a-row type="flex" justify="center">
+            <a-form-model-item>
+              <a-space>
+                <a-button
+                  type="primary"
+                  @click="
+                    () => {
+                      proxyConfigData = {
+                        ...proxyConfigData,
+                        globalProxy: [
+                          ...proxyConfigData.globalProxy,
+                          {
+                            proxyType: 'HTTP',
+                          },
+                        ],
+                      };
+                    }
+                  "
+                  >添加</a-button
+                >
+                <a-button type="primary" @click="saveProxyConfigHannder">保存</a-button>
+              </a-space>
+            </a-form-model-item>
+          </a-row>
+        </a-form-model>
+      </a-row>
+    </a-tab-pane>
   </a-tabs>
 </template>
 <script>
-import { getConfigData, editConfig, getIpConfigData, getNodeConfig, getMenusConfig, saveMenusConfig, saveNodeConfig, editIpConfig, systemInfo, getWhitelist, saveWhitelist } from "@/api/system";
+import {
+  editConfig,
+  editIpConfig,
+  getConfigData,
+  getIpConfigData,
+  getMenusConfig,
+  getNodeConfig,
+  getProxyConfig,
+  getWhitelist,
+  saveMenusConfig,
+  saveNodeConfig,
+  saveProxyConfig,
+  saveWhitelist,
+  systemInfo,
+} from "@/api/system";
 import codeEditor from "@/components/codeEditor";
-import { RESTART_UPGRADE_WAIT_TIME_COUNT } from "@/utils/const";
+import {RESTART_UPGRADE_WAIT_TIME_COUNT} from "@/utils/const";
 import Vue from "vue";
-import { getNodeListAll } from "@/api/node";
+import {getNodeListAll} from "@/api/node";
 
 export default {
   components: {
@@ -254,6 +370,13 @@ export default {
       checkCount: 0,
       menusConfigData: {},
       replaceFields: { children: "childs", title: "title", key: "id" },
+      proxyConfigData: {
+        globalProxy: [
+          {
+            proxyType: "HTTP",
+          },
+        ],
+      },
     };
   },
   mounted() {
@@ -499,6 +622,25 @@ export default {
         }
       });
     },
+    // 加载
+    loadProxyConfig() {
+      getProxyConfig().then((res) => {
+        if (res.data && res.data.length) {
+          this.proxyConfigData = { globalProxy: res.data };
+        }
+      });
+    },
+    // 保存
+    saveProxyConfigHannder() {
+      saveProxyConfig(this.proxyConfigData.globalProxy).then((res) => {
+        if (res.code === 200) {
+          // 成功
+          this.$notification.success({
+            message: res.msg,
+          });
+        }
+      });
+    },
     // 切换
     tabChange(activeKey) {
       if (activeKey === "1") {
@@ -513,6 +655,9 @@ export default {
         this.getAllNodeList();
       } else if (activeKey === "5") {
         this.loadMenusConfig();
+      } else if (activeKey === "6") {
+        //
+        this.loadProxyConfig();
       }
     },
   },

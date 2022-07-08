@@ -8,7 +8,17 @@
         <a-space>
           <a-input class="search-input-item" @pressEnter="loadData" v-model="listQuery['%name%']" placeholder="仓库名称" />
           <a-input class="search-input-item" @pressEnter="loadData" v-model="listQuery['%gitUrl%']" placeholder="仓库地址" />
-          <a-select v-model="listQuery.repoType" allowClear placeholder="仓库类型" class="search-input-item">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            v-model="listQuery.repoType"
+            allowClear
+            placeholder="仓库类型"
+            class="search-input-item"
+          >
             <a-select-option :value="'0'">GIT</a-select-option>
             <a-select-option :value="'1'">SVN</a-select-option>
           </a-select>
@@ -52,11 +62,21 @@
         </a-form-model-item>
         <a-form-model-item label="仓库地址" prop="gitUrl">
           <a-input-group compact>
-            <a-select style="width: 20%" v-model="temp.repoType" name="repoType" placeholder="仓库类型">
+            <a-select
+              :getPopupContainer="
+                (triggerNode) => {
+                  return triggerNode.parentNode || document.body;
+                }
+              "
+              style="width: 20%"
+              v-model="temp.repoType"
+              name="repoType"
+              placeholder="仓库类型"
+            >
               <a-select-option :value="0">GIT</a-select-option>
               <a-select-option :value="1">SVN</a-select-option>
             </a-select>
-            <a-input style="width: 80%" maxLength="250" v-model="temp.gitUrl" placeholder="仓库地址" />
+            <a-input style="width: 80%" :maxLength="250" v-model="temp.gitUrl" placeholder="仓库地址" />
           </a-input-group>
         </a-form-model-item>
         <a-form-model-item label="协议" prop="protocol">
@@ -145,7 +165,15 @@
             </a-tooltip>
           </template>
           <a-input-group compact>
-            <a-select v-model="giteeImportForm.type" @change="importTypeChange">
+            <a-select
+              :getPopupContainer="
+                (triggerNode) => {
+                  return triggerNode.parentNode || document.body;
+                }
+              "
+              v-model="giteeImportForm.type"
+              @change="importTypeChange"
+            >
               <a-select-option value="gitee"> gitee </a-select-option>
               <a-select-option value="github"> github </a-select-option>
               <a-select-option value="gitlab"> gitlab </a-select-option>
@@ -154,9 +182,19 @@
               <a-input-search style="width: 55%; margin-top: 1px" enter-button v-model="giteeImportForm.token" @search="handleGiteeImportFormOk" :placeholder="importTypePlaceholder" />
             </a-tooltip>
           </a-input-group>
+          <a-input-group compact style="width: 105%">
+            <a-tooltip title="输入仓库名称或者仓库路径进行搜索">
+              <a-input style="width: 55%; margin-top: 1px" enter-button v-model="giteeImportForm.condition" placeholder="输入仓库名称或者仓库路径进行搜索" />
+            </a-tooltip>
+          </a-input-group>
+          <a-input-group compact style="width: 105%" v-if="giteeImportForm.type === 'gitlab'">
+            <a-tooltip title="请输入 GitLab 的地址，支持自建 GitLab，不需要输入协议，如：gitlab.com、gitlab.jpom.io、10.1.2.3、10.1.2.3:8888 等">
+              <a-input style="width: 55%; margin-top: 1px" enter-button v-model="giteeImportForm.gitlabAddress" placeholder="gitlab.com" />
+            </a-tooltip>
+          </a-input-group>
         </a-form-model-item>
       </a-form-model>
-      <a-table :loading="loading" :columns="reposColumns" :data-source="repos" bordered rowKey="id" @change="reposChange" :pagination="reposPagination">
+      <a-table :loading="loading" :columns="reposColumns" :data-source="repos" bordered rowKey="full_name" @change="reposChange" :pagination="reposPagination">
         <template slot="private" slot-scope="text, record">
           <a-switch :disabled="true" :checked="record.private" />
         </template>
@@ -181,16 +219,17 @@
   </div>
 </template>
 <script>
-import { deleteRepository, editRepository, getRepositoryList, authorizeRepos, restHideField } from "@/api/repository";
-import { parseTime } from "@/utils/time";
-import { PAGE_DEFAULT_LIST_QUERY, COMPUTED_PAGINATION, CHANGE_PAGE } from "@/utils/const";
+import {authorizeRepos, deleteRepository, editRepository, getRepositoryList, restHideField} from "@/api/repository";
+import {parseTime} from "@/utils/time";
+import {CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY} from "@/utils/const";
 
 export default {
   components: {},
   data() {
     return {
       loading: false,
-      listQuery: Object.assign({}, PAGE_DEFAULT_LIST_QUERY),
+      PAGE_DEFAULT_SIZW_OPTIONS: ["15", "20", "25", "30", "35", "40", "50"],
+      listQuery: Object.assign({}, PAGE_DEFAULT_LIST_QUERY, { limit: 15 }),
       list: [],
       total: 0,
       temp: {},
@@ -267,7 +306,7 @@ export default {
           align: "left",
         },
       ],
-      giteeImportForm: Object.assign({ type: "gitee" }, PAGE_DEFAULT_LIST_QUERY),
+      giteeImportForm: Object.assign({}, PAGE_DEFAULT_LIST_QUERY, { limit: 15, type: "gitee" }),
       giteeImportFormRules: {
         token: [{ required: true, message: "请输入私人令牌", trigger: "blur" }],
       },
@@ -280,10 +319,10 @@ export default {
   computed: {
     // 分页
     pagination() {
-      return COMPUTED_PAGINATION(this.listQuery);
+      return COMPUTED_PAGINATION(this.listQuery, this.PAGE_DEFAULT_SIZW_OPTIONS);
     },
     reposPagination() {
-      return COMPUTED_PAGINATION(this.giteeImportForm);
+      return COMPUTED_PAGINATION(this.giteeImportForm, this.PAGE_DEFAULT_SIZW_OPTIONS);
     },
   },
   watch: {},

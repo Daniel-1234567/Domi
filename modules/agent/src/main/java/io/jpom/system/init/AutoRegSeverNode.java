@@ -145,17 +145,18 @@ public class AutoRegSeverNode {
         url = StrUtil.removeSuffix(url, CharPool.SINGLE_QUOTE + "");
         url = StrUtil.removePrefix(url, CharPool.SINGLE_QUOTE + "");
         UrlBuilder urlBuilder = UrlBuilder.ofHttp(url);
+        String networkName = (String) urlBuilder.getQuery().get("networkName");
         //
-        LinkedHashSet<InetAddress> localAddressList = NetUtil.localAddressList(address -> {
+        LinkedHashSet<InetAddress> localAddressList = NetUtil.localAddressList(networkInterface -> StrUtil.isEmpty(networkName) || StrUtil.equals(networkName, networkInterface.getName()), address -> {
             // 非loopback地址，指127.*.*.*的地址
             return !address.isLoopbackAddress()
                 // 需为IPV4地址
                 && address instanceof Inet4Address;
         });
-        Set<String> ips = localAddressList.stream()
-            .map(InetAddress::getHostAddress)
-            .filter(StrUtil::isNotEmpty)
-            .collect(Collectors.toSet());
+        if (StrUtil.isNotEmpty(networkName) && CollUtil.isEmpty(localAddressList)) {
+            log.warn("No usable IP found by NIC name,{}", networkName);
+        }
+        Set<String> ips = localAddressList.stream().map(InetAddress::getHostAddress).filter(StrUtil::isNotEmpty).collect(Collectors.toSet());
         urlBuilder.addQuery("ips", CollUtil.join(ips, StrUtil.COMMA));
         AgentAuthorize agentAuthorize = AgentAuthorize.getInstance();
         urlBuilder.addQuery("loginName", agentAuthorize.getAgentName());
@@ -169,6 +170,4 @@ public class AutoRegSeverNode {
             Console.log("push result:" + body);
         }
     }
-
-
 }

@@ -1,24 +1,36 @@
 <template>
   <div class="full-content">
     <!-- 表格 :scroll="{x: 740, y: tableHeight - 60}" scroll 跟 expandedRowRender 不兼容，没法同时使用不然会多出一行数据-->
-    <a-table
-      :columns="columns"
-      :data-source="list"
-      bordered
-      rowKey="id"
-      @expand="expand"
-      :pagination="pagination"
-      @change="changePage"
-    >
+    <a-table :columns="columns" :data-source="list" bordered rowKey="id" @expand="expand" :pagination="pagination" @change="changePage">
       <template slot="title">
         <a-space>
           <a-input class="search-input-item" @pressEnter="loadData" v-model="listQuery['%id%']" placeholder="id" />
           <a-input class="search-input-item" @pressEnter="loadData" v-model="listQuery['%name%']" placeholder="名称" />
-          <a-select v-model="listQuery.outGivingProject" allowClear placeholder="分发类型" class="search-input-item">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            v-model="listQuery.outGivingProject"
+            allowClear
+            placeholder="分发类型"
+            class="search-input-item"
+          >
             <a-select-option :value="1">独立</a-select-option>
             <a-select-option :value="0">关联</a-select-option>
           </a-select>
-          <a-select v-model="listQuery.status" allowClear placeholder="请选择状态" class="search-input-item">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            v-model="listQuery.status"
+            allowClear
+            placeholder="请选择状态"
+            class="search-input-item"
+          >
             <a-select-option v-for="(name, key) in statusMap" :key="key">{{ name }}</a-select-option>
           </a-select>
           <a-tooltip title="按住 Ctr 或者 Alt/Option 键点击按钮快速回到第一页">
@@ -200,7 +212,15 @@
           <a-button type="primary" @click="addDispachList">添加</a-button>
         </a-form-model-item>
         <a-form-model-item label="分发后操作" prop="afterOpt">
-          <a-select v-model="temp.afterOpt" placeholder="请选择发布后操作">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            v-model="temp.afterOpt"
+            placeholder="请选择发布后操作"
+          >
             <a-select-option v-for="item in afterOptList" :key="item.value">{{ item.title }}</a-select-option>
           </a-select>
         </a-form-model-item>
@@ -263,7 +283,15 @@
               <a-icon type="question-circle" theme="filled" />
             </a-tooltip>
           </template>
-          <a-select v-model="temp.runMode" placeholder="请选择运行方式">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            v-model="temp.runMode"
+            placeholder="请选择运行方式"
+          >
             <a-select-option v-for="runMode in runModeList" :key="runMode">{{ runMode }}</a-select-option>
           </a-select>
         </a-form-model-item>
@@ -284,7 +312,16 @@
             </a-tooltip>
           </template>
           <a-input-group compact>
-            <a-select style="width: 50%" v-model="temp.whitelistDirectory" placeholder="请选择项目白名单路径">
+            <a-select
+              :getPopupContainer="
+                (triggerNode) => {
+                  return triggerNode.parentNode || document.body;
+                }
+              "
+              style="width: 50%"
+              v-model="temp.whitelistDirectory"
+              placeholder="请选择项目白名单路径"
+            >
               <a-select-option v-for="access in accessList" :key="access">{{ access }}</a-select-option>
             </a-select>
             <a-input style="width: 50%" v-model="temp.lib" placeholder="项目存储的文件夹，jar 包存放的文件夹" />
@@ -345,7 +382,15 @@
               <a-icon type="question-circle" theme="filled" />
             </a-tooltip>
           </template>
-          <a-select v-model="temp.logPath" placeholder="请选择日志目录">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            v-model="temp.logPath"
+            placeholder="请选择日志目录"
+          >
             <a-select-option key="" value="">默认是在项目文件夹父级</a-select-option>
             <a-select-option v-for="access in accessList" :key="access">{{ access }}</a-select-option>
           </a-select>
@@ -357,7 +402,15 @@
           <a-input v-model="temp.javaExtDirsCp" placeholder="-Dext.dirs=xxx: -cp xx  填写【xxx:xx】" />
         </a-form-model-item>
         <a-form-model-item label="分发后操作" prop="afterOpt">
-          <a-select v-model="temp.afterOpt" placeholder="请选择发布后操作">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            v-model="temp.afterOpt"
+            placeholder="请选择发布后操作"
+          >
             <a-select-option v-for="item in afterOptList" :key="item.value">{{ item.title }}</a-select-option>
           </a-select>
         </a-form-model-item>
@@ -386,7 +439,16 @@
         </a-form-model-item>
         <!-- 节点 -->
         <a-form-model-item label="分发节点" prop="nodeId">
-          <a-select v-model="temp.nodeIdList" mode="multiple" placeholder="请选择分发节点">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            v-model="temp.nodeIdList"
+            mode="multiple"
+            placeholder="请选择分发节点"
+          >
             <a-select-option v-for="node in nodeList" :key="node.id">{{ `${node.name}` }}</a-select-option>
           </a-select>
         </a-form-model-item>
@@ -426,22 +488,9 @@
             </a-form-model-item>
 
             <div v-if="javaModes.includes(temp.runMode)">
-              <!-- 副本信息 -->
-              <a-row v-for="replica in temp[`${nodeId}_javaCopyItemList`]" :key="replica.id">
-                <a-form-model-item :label="`副本 ${replica.id} JVM 参数`" prop="jvm">
-                  <a-textarea v-model="replica.jvm" :auto-size="{ minRows: 3, maxRows: 3 }" class="replica-area" placeholder="jvm参数,非必填.如：-Xms512m -Xmx512m" />
-                </a-form-model-item>
-                <a-form-model-item :label="`副本 ${replica.id} args 参数`" prop="args">
-                  <a-textarea v-model="replica.args" :auto-size="{ minRows: 3, maxRows: 3 }" class="replica-area" placeholder="Main 函数 args 参数，非必填. 如：--server.port=8080" />
-                </a-form-model-item>
-                <a-tooltip placement="topLeft" title="已经添加成功的副本需要在副本管理页面去删除" class="replica-btn-del">
-                  <a-button :disabled="!replica.deleteAble" type="danger" @click="handleDeleteReplica(nodeId, replica)">删除</a-button>
-                </a-tooltip>
-              </a-row>
-              <!-- 添加副本 -->
               <a-form-model-item>
                 <template slot="label">
-                  副本操作
+                  副本
                   <a-tooltip v-show="temp.type !== 'edit'">
                     <template slot="title">
                       <ul>
@@ -451,7 +500,38 @@
                     <a-icon type="question-circle" theme="filled" />
                   </a-tooltip>
                 </template>
-                <a-button type="primary" @click="handleAddReplica(nodeId)">添加副本</a-button>
+                <!-- 副本信息 -->
+                <a-collapse v-if="temp[`${nodeId}_javaCopyItemList`] && temp[`${nodeId}_javaCopyItemList`].length">
+                  <a-collapse-panel v-for="replica in temp[`${nodeId}_javaCopyItemList`]" :key="replica.id">
+                    <template #header>
+                      <a-row>
+                        <a-col :span="18"> 副本 {{ replica.name }} {{ replica.id }} </a-col>
+                        <a-col :span="4">
+                          <a-tooltip placement="topLeft" title="已经添加成功的副本需要在副本管理页面去删除">
+                            <a-button size="small" :disabled="!replica.deleteAble" type="danger" @click.stop="handleDeleteReplica(nodeId, replica)">删除</a-button>
+                          </a-tooltip>
+                        </a-col>
+                      </a-row>
+                    </template>
+                    <a-form-model-item :label="`名称`" prop="replicaName">
+                      <a-input v-model="replica.name" class="replica-area" placeholder="副本名称" />
+                    </a-form-model-item>
+                    <a-form-model-item :label="`JVM 参数`" prop="jvm">
+                      <a-textarea v-model="replica.jvm" :auto-size="{ minRows: 3, maxRows: 3 }" class="replica-area" placeholder="jvm参数,非必填.如：-Xms512m -Xmx512m" />
+                    </a-form-model-item>
+                    <a-form-model-item :label="`args 参数`" prop="args">
+                      <a-textarea v-model="replica.args" :auto-size="{ minRows: 3, maxRows: 3 }" class="replica-area" placeholder="Main 函数 args 参数，非必填. 如：--server.port=8080" />
+                    </a-form-model-item>
+                    <!-- <a-tooltip placement="topLeft" title="已经添加成功的副本需要在副本管理页面去删除" class="replica-btn-del">
+                      <a-button :disabled="!replica.deleteAble" type="danger" @click="handleDeleteReplica(nodeId, replica)">删除</a-button>
+                    </a-tooltip> -->
+                  </a-collapse-panel>
+                </a-collapse>
+
+                <!-- 添加副本 -->
+                <a-form-model-item>
+                  <a-button type="primary" @click="handleAddReplica(nodeId)">添加副本</a-button>
+                </a-form-model-item>
               </a-form-model-item>
             </div>
           </a-collapse-panel>
@@ -500,7 +580,15 @@
           <a-switch v-model="temp.autoUnzip" checked-children="是" un-checked-children="否" />
         </a-form-model-item>
         <a-form-model-item label="分发后操作" prop="afterOpt">
-          <a-select v-model="temp.afterOpt" placeholder="请选择发布后操作">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            v-model="temp.afterOpt"
+            placeholder="请选择发布后操作"
+          >
             <a-select-option v-for="item in afterOptList" :key="item.value">{{ item.title }}</a-select-option>
           </a-select>
         </a-form-model-item>
@@ -521,23 +609,24 @@ import File from "@/pages/node/node-layout/project/project-file";
 import Console from "@/pages/node/node-layout/project/project-console";
 import codeEditor from "@/components/codeEditor";
 import {
-  getDishPatchList,
-  getDispatchProject,
+  afterOptList,
+  delDisPatchProject,
   editDispatch,
   editDispatchProject,
-  uploadDispatchFile,
+  getDishPatchList,
+  getDispatchProject,
   getDispatchWhiteList,
   releaseDelDisPatch,
-  delDisPatchProject,
   remoteDownload,
-  afterOptList,
   statusMap,
   unbindOutgiving,
+  uploadDispatchFile,
 } from "@/api/dispatch";
-import { getNodeListAll, getProjectListAll } from "@/api/node";
-import { getProjectData, runModeList, javaModes, noFileModes } from "@/api/node-project";
-import { itemGroupBy, parseTime } from "@/utils/time";
-import { COMPUTED_PAGINATION, CHANGE_PAGE, PAGE_DEFAULT_LIST_QUERY, PROJECT_DSL_DEFATUL } from "@/utils/const";
+import {getNodeListAll, getProjectListAll} from "@/api/node";
+import {getProjectData, javaModes, noFileModes, runModeList} from "@/api/node-project";
+import {itemGroupBy, parseTime} from "@/utils/time";
+import {CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, PROJECT_DSL_DEFATUL} from "@/utils/const";
+
 export default {
   components: {
     File,
@@ -894,6 +983,7 @@ export default {
         id: repliccaId,
         jvm: "",
         args: "",
+        name: "",
         deleteAble: true,
       });
       this.temp = { ...this.temp };
@@ -938,6 +1028,7 @@ export default {
             copyIds.push(element.id);
             tempData[`${key}_jvm_${element.id}`] = element.jvm;
             tempData[`${key}_args_${element.id}`] = element.args;
+            tempData[`${key}_name_${element.id}`] = element.name;
           });
           // 移除多余的后缀 ,
           tempData[`${key}_javaCopyIds`] = copyIds.join(",");
@@ -1231,11 +1322,11 @@ export default {
 </script>
 <style scoped>
 .replica-area {
-  width: 300px;
+  width: 80%;
 }
-.replica-btn-del {
+/* .replica-btn-del {
   position: absolute;
   right: 0;
   top: 74px;
-}
+} */
 </style>

@@ -230,7 +230,16 @@
               <a-input v-model="tempNode.name" placeholder="节点名称" />
             </a-form-model-item>
             <a-form-model-item label="节点协议" prop="protocol">
-              <a-select v-model="tempNode.protocol" defaultValue="http" placeholder="节点协议">
+              <a-select
+                :getPopupContainer="
+                  (triggerNode) => {
+                    return triggerNode.parentNode || document.body;
+                  }
+                "
+                v-model="tempNode.protocol"
+                defaultValue="http"
+                placeholder="节点协议"
+              >
                 <a-select-option key="http">HTTP</a-select-option>
                 <a-select-option key="https">HTTPS</a-select-option>
               </a-select>
@@ -360,14 +369,24 @@
           <ul>
             <li>同步机制采用 IP+PORT+连接方式 确定是同一个服务器</li>
             <li>当目标工作空间不存在对应的 SSH 时候将自动创建一个新的 SSH</li>
-            <li>当目标工作空间已经存在 SSH 时候将自动同步 SSH 账号、密码、私钥信息</li>
+            <li>当目标工作空间已经存在 SSH 时候将自动同步 SSH 账号、密码、私钥等信息</li>
           </ul>
         </template>
       </a-alert>
       <a-form-model :model="temp" :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
         <a-form-model-item> </a-form-model-item>
         <a-form-model-item label="选择工作空间" prop="workspaceId">
-          <a-select show-search option-filter-prop="children" v-model="temp.workspaceId" placeholder="请选择工作空间">
+          <a-select
+            :getPopupContainer="
+              (triggerNode) => {
+                return triggerNode.parentNode || document.body;
+              }
+            "
+            show-search
+            option-filter-prop="children"
+            v-model="temp.workspaceId"
+            placeholder="请选择工作空间"
+          >
             <a-select-option :disabled="getWorkspaceId === item.id" v-for="item in workspaceList" :key="item.id">{{ item.name }}</a-select-option>
           </a-select>
         </a-form-model-item>

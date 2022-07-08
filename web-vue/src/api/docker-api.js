@@ -148,6 +148,50 @@ export function dockerContainerStop(params) {
 }
 
 /**
+ * 获取容器统计信息
+ * @param {JSON} params
+ */
+export function dockerContainerStats(params) {
+  return axios({
+    url: "/docker/container/stats",
+    method: "get",
+    params: params,
+    headers: {
+      // tip: "no",
+      loading: "no",
+    },
+  });
+}
+
+/**
+ * 获取容器信息
+ * @param {JSON} params
+ */
+export function dockerInspectContainer(params) {
+  return axios({
+    url: "/docker/container/inspect-container",
+    method: "get",
+    params: params,
+  });
+}
+
+/**
+ * 更新容器
+ * @param {JSON} params
+ * @returns
+ */
+export function dockerUpdateContainer(params) {
+  return axios({
+    url: "/docker/container/update-container",
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: params,
+  });
+}
+
+/**
  * 容器中的镜像列表
  * @param {JSON} params
  */
@@ -192,7 +236,7 @@ export function dockerImageCreateContainer(params) {
     url: "/docker/images/create-container",
     method: "post",
     headers: {
-        "Content-Type": "application/json",
+      "Content-Type": "application/json",
     },
     data: params,
   });

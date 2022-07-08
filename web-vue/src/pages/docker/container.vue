@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-table :data-source="list" size="middle" :columns="columns" :pagination="false" bordered :rowKey="(record, index) => index">
+    <a-table :data-source="list" size="middle" :columns="columns" :pagination="false" bordered rowKey="id" @expand="expand">
       <template slot="title">
         <a-space>
           <a-input v-model="listQuery['name']" @pressEnter="loadData" placeholder="名称" class="search-input-item" />
@@ -125,6 +125,85 @@
           </a-tooltip>
         </a-space>
       </template>
+
+      <!-- stats -->
+      <a-table slot="expandedRowRender" :rowKey="(record, index) => index" slot-scope="parentRecord" :columns="statsColumns" :data-source="statsMap[parentRecord.id]" :pagination="false">
+        <template slot="cpus" slot-scope="text, record">
+          {{ (record.cpuStats && record.cpuStats.percpuUsage) || (record.cpuStats && record.cpuStats.onlineCpus) }}
+        </template>
+        <template slot="cpuRatio" slot-scope="text, record">
+          {{
+            (
+              ((((record.cpuStats && record.cpuStats.cpuUsage && record.cpuStats.cpuUsage.totalUsage) || 0) -
+                ((record.precpuStats && record.precpuStats.cpuUsage && record.precpuStats.cpuUsage.totalUsage) || 0)) /
+                ((record.cpuStats && record.cpuStats.systemCpuUsage) || 0) -
+                ((record.precpuStats && record.precpuStats.systemCpuUsage) || 0)) *
+              100.0
+            ).toFixed(4)
+          }}
+          %
+        </template>
+        <template slot="memory" slot-scope="text, record">
+          <!-- record.state !== 'running' -->
+          <!-- text === 'running' -->
+          <template v-if="parentRecord.state === 'running'">
+            <a-button type="link" icon="edit" @click="editContainer(parentRecord)">
+              {{ renderSize(((record.memoryStats && record.memoryStats.usage) || 0) - ((record.memoryStats && record.memoryStats.stats && record.memoryStats.stats.cache) || 0)) }}
+              /
+              {{ renderSize((record.memoryStats && record.memoryStats.limit) || 0) }}
+            </a-button>
+          </template>
+          <template v-else>
+            {{ renderSize(((record.memoryStats && record.memoryStats.usage) || 0) - ((record.memoryStats && record.memoryStats.stats && record.memoryStats.stats.cache) || 0)) }}
+            /
+            {{ renderSize((record.memoryStats && record.memoryStats.limit) || 0) }}
+          </template>
+        </template>
+        <template slot="memoryRatio" slot-scope="text, record">
+          <!-- memoryRatio -->
+          {{
+            (
+              ((((record.memoryStats && record.memoryStats.usage) || 0) - ((record.memoryStats && record.memoryStats.stats && record.memoryStats.stats.cache) || 0)) /
+                (record.memoryStats && record.memoryStats.limit)) *
+              100.0
+            ).toFixed(4)
+          }}
+          %
+        </template>
+        <template slot="blockIo" slot-scope="text, record">
+          <a-tooltip
+            :title="`${
+              (record.blkioStats && record.blkioStats.ioServiceBytesRecursive && record.blkioStats.ioServiceBytesRecursive[0] && record.blkioStats.ioServiceBytesRecursive[0].op) || 'blkioStats'
+            }`"
+          >
+            {{ renderSize(record.blkioStats && record.blkioStats.ioServiceBytesRecursive && record.blkioStats.ioServiceBytesRecursive[0] && record.blkioStats.ioServiceBytesRecursive[0].value) || 0 }}
+          </a-tooltip>
+          /
+          <a-tooltip
+            :title="`${
+              (record.blkioStats && record.blkioStats.ioServiceBytesRecursive && record.blkioStats.ioServiceBytesRecursive[1] && record.blkioStats.ioServiceBytesRecursive[1].op) || 'blkioStats'
+            }`"
+          >
+            {{ renderSize(record.blkioStats && record.blkioStats.ioServiceBytesRecursive && record.blkioStats.ioServiceBytesRecursive[1] && record.blkioStats.ioServiceBytesRecursive[1].value) || 0 }}
+          </a-tooltip>
+        </template>
+        <template slot="netIo" slot-scope="text, record">
+          <!-- // rx_bytes 网卡接收流量 -->
+          <!-- // tx_bytes 网卡输出流量 -->
+
+          <div :key="index" v-for="(item, index) in Object.keys(record.networks || {})">
+            <a-tooltip :title="`${item} 接收流量`">
+              {{ renderSize(record.networks[item] && record.networks[item].rxBytes) || 0 }}
+            </a-tooltip>
+            /
+            <a-tooltip :title="`${item} 输出流量`">
+              {{ renderSize(record.networks[item] && record.networks[item].txBytes) || 0 }}
+            </a-tooltip>
+          </div>
+        </template>
+        <!-- // 进程或线程的数量 -->
+        <template slot="pids" slot-scope="text, record"> {{ record.pidsStats && record.pidsStats.current }}</template>
+      </a-table>
     </a-table>
     <!-- 日志 -->
     <a-modal :width="'80vw'" v-model="logVisible" title="执行日志" :footer="null" :maskClosable="false">
@@ -134,7 +213,6 @@
     <a-modal
       v-model="terminalVisible"
       width="80vw"
-
       :bodyStyle="{
         padding: '0px 10px',
         paddingTop: '10px',
@@ -147,11 +225,116 @@
     >
       <terminal v-if="terminalVisible" :id="this.id" :containerId="temp.id" />
     </a-modal>
+    <!-- 编辑容器配置 -->
+    <a-modal v-model="editVisible" title="配置容器" @ok="handleEditOk" :maskClosable="false">
+      <a-form-model ref="editForm" :model="temp" :label-col="{ span: 7 }" :wrapper-col="{ span: 17 }">
+        <a-form-model-item prop="blkioWeight">
+          <template slot="label">
+            Block IO 权重
+            <a-tooltip>
+              <template slot="title"> Block IO 权重（相对权重）。 </template>
+              <a-icon type="question-circle" theme="filled" />
+            </a-tooltip>
+          </template>
+          <a-input-number style="width: 100%" v-model="temp.blkioWeight" :min="0" :max="1000" />
+        </a-form-model-item>
+        <a-form-model-item prop="cpuShares">
+          <template slot="label">
+            CPU 权重
+            <a-tooltip>
+              <template slot="title"> 一个整数值，表示此容器相对于其他容器的相对 CPU 权重。 </template>
+              <a-icon type="question-circle" theme="filled" />
+            </a-tooltip>
+          </template>
+          <a-input-number style="width: 100%" v-model="temp.cpuShares" />
+        </a-form-model-item>
+        <a-form-model-item prop="cpusetCpus">
+          <template slot="label">
+            执行的 CPU
+            <a-tooltip>
+              <template slot="title"> 允许执行的 CPU（例如，0-3、0,1）。 </template>
+              <a-icon type="question-circle" theme="filled" />
+            </a-tooltip>
+          </template>
+          <a-input style="width: 100%" v-model="temp.cpusetCpus" />
+        </a-form-model-item>
+        <a-form-model-item prop="cpusetMems">
+          <template slot="label">
+            CpusetMems
+            <a-tooltip>
+              <template slot="title"> 允许执行的内存节点 (MEM) (0-3, 0,1)。 仅在 NUMA 系统上有效。 </template>
+              <a-icon type="question-circle" theme="filled" />
+            </a-tooltip>
+          </template>
+          <a-input style="width: 100%" v-model="temp.cpusetMems" />
+        </a-form-model-item>
+        <a-form-model-item prop="cpuPeriod">
+          <template slot="label">
+            CPU 周期
+            <a-tooltip>
+              <template slot="title"> CPU 周期的长度，以微秒为单位。 </template>
+              <a-icon type="question-circle" theme="filled" />
+            </a-tooltip>
+          </template>
+          <a-input-number style="width: 100%" v-model="temp.cpuPeriod" />
+        </a-form-model-item>
+        <a-form-model-item prop="cpuQuota">
+          <template slot="label">
+            CPU 时间
+            <a-tooltip>
+              <template slot="title"> 容器在一个 CPU 周期内可以获得的 CPU 时间的微秒。 </template>
+              <a-icon type="question-circle" theme="filled" />
+            </a-tooltip>
+          </template>
+          <a-input-number style="width: 100%" v-model="temp.cpuQuota" />
+        </a-form-model-item>
+
+        <a-form-model-item prop="memory">
+          <template slot="label">
+            内存
+            <a-tooltip>
+              <template slot="title"> 设置内存限制。 </template>
+              <a-icon type="question-circle" theme="filled" />
+            </a-tooltip>
+          </template>
+          <a-input style="width: 100%" v-model="temp.memory" />
+        </a-form-model-item>
+        <a-form-model-item prop="memorySwap">
+          <template slot="label">
+            总内存
+            <a-tooltip>
+              <template slot="title"> 总内存（内存 + 交换）。 设置为 -1 以禁用交换。 </template>
+              <a-icon type="question-circle" theme="filled" />
+            </a-tooltip>
+          </template>
+          <a-input style="width: 100%" v-model="temp.memorySwap" />
+        </a-form-model-item>
+        <a-form-model-item prop="memoryReservation">
+          <template slot="label">
+            软内存
+            <a-tooltip>
+              <template slot="title"> 软内存限制。 </template>
+              <a-icon type="question-circle" theme="filled" />
+            </a-tooltip>
+          </template>
+          <a-input style="width: 100%" v-model="temp.memoryReservation" />
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
   </div>
 </template>
 <script>
-import {parseTime} from "@/utils/time";
-import {dockerContainerList, dockerContainerRemove, dockerContainerRestart, dockerContainerStart, dockerContainerStop} from "@/api/docker-api";
+import {parseTime, renderSize} from "@/utils/time";
+import {
+  dockerContainerList,
+  dockerContainerRemove,
+  dockerContainerRestart,
+  dockerContainerStart,
+  dockerContainerStats,
+  dockerContainerStop,
+  dockerInspectContainer,
+  dockerUpdateContainer,
+} from "@/api/docker-api";
 import LogView from "@/pages/docker/log-view";
 import Terminal from "@/pages/docker/terminal";
 
@@ -203,6 +386,19 @@ export default {
         },
         { title: "操作", dataIndex: "operation", scopedSlots: { customRender: "operation" }, width: 200 },
       ],
+      statsColumns: [
+        { title: "CPUS", width: "80px", dataIndex: "cpus", ellipsis: true, scopedSlots: { customRender: "cpus" } },
+        { title: "CPU %", width: 100, dataIndex: "cpuRatio", ellipsis: true, scopedSlots: { customRender: "cpuRatio" } },
+
+        { title: "MEM USAGE / LIMIT", dataIndex: "memory", ellipsis: true, scopedSlots: { customRender: "memory" } },
+        { title: "MEM %", width: 100, dataIndex: "memoryRatio", ellipsis: true, scopedSlots: { customRender: "memoryRatio" } },
+        { title: "NET I/O", dataIndex: "netIo", ellipsis: true, scopedSlots: { customRender: "netIo" } },
+        { title: "BLOCK I/O", dataIndex: "blockIo", ellipsis: true, scopedSlots: { customRender: "blockIo" } },
+        { title: "PIDS", width: "80px", dataIndex: "pids", ellipsis: true, scopedSlots: { customRender: "pids" } },
+      ],
+
+      statsMap: {},
+      expandedRowKeys: [],
       action: {
         remove: {
           msg: "您确定要删除当前容器吗？",
@@ -221,6 +417,7 @@ export default {
           api: dockerContainerStart,
         },
       },
+      editVisible: false,
     };
   },
   beforeDestroy() {
@@ -230,6 +427,7 @@ export default {
     this.loadData();
   },
   methods: {
+    renderSize,
     // 加载数据
     loadData() {
       if (!this.visible) {
@@ -246,6 +444,7 @@ export default {
         clearTimeout(this.autoUpdateTime);
         this.autoUpdateTime = setTimeout(() => {
           this.loadData();
+          this.pullStats();
         }, 3000);
       });
     },
@@ -271,6 +470,9 @@ export default {
                 message: res.msg,
               });
               this.loadData();
+              if (actionKey === "remove") {
+                this.expandedRowKeys = this.expandedRowKeys.filter((item2) => item2 !== record.id);
+              }
             }
           });
         },
@@ -284,6 +486,77 @@ export default {
     handleTerminal(record) {
       this.temp = Object.assign({}, record);
       this.terminalVisible = true;
+    },
+    // 展开
+    expand(status, item) {
+      if (status) {
+        this.expandedRowKeys.push(item.id);
+        this.pullStats();
+      } else {
+        this.expandedRowKeys = this.expandedRowKeys.filter((item2) => item2 !== item.id);
+      }
+    },
+    //  获取数据
+    pullStats() {
+      if (!this.expandedRowKeys.length) {
+        return;
+      }
+      dockerContainerStats({
+        id: this.id,
+        containerId: this.expandedRowKeys.join(","),
+      }).then((res) => {
+        if (res.code === 200) {
+          Object.keys(res.data).forEach((item) => {
+            this.statsMap = { ...this.statsMap, [item]: [res.data[item]] };
+          });
+        }
+        // console.log(res);
+      });
+    },
+    // 编辑容器
+    editContainer(record) {
+      dockerInspectContainer({
+        id: this.id,
+        containerId: record.id,
+      }).then((res) => {
+        if (res.code === 200) {
+          this.editVisible = true;
+
+          const hostConfig = res.data.hostConfig || {};
+          const data = {
+            containerId: record.id,
+            cpusetCpus: hostConfig.cpusetCpus,
+            cpusetMems: hostConfig.cpusetMems,
+            cpuPeriod: hostConfig.cpuPeriod,
+            cpuShares: hostConfig.cpuShares,
+            cpuQuota: hostConfig.cpuQuota,
+            blkioWeight: hostConfig.blkioWeight,
+            memoryReservation: renderSize(hostConfig.memoryReservation, hostConfig.memoryReservation),
+            // Deprecated: This field is deprecated as the kernel 5.4 deprecated kmem.limit_in_bytes.
+            // kernelMemory: hostConfig.kernelMemory,
+            memory: renderSize(hostConfig.memory, hostConfig.memory),
+            memorySwap: renderSize(hostConfig.memorySwap, hostConfig.memorySwap),
+          };
+
+          this.temp = Object.assign({}, data);
+        }
+      });
+    },
+    handleEditOk() {
+      this.$refs["editForm"].validate((valid) => {
+        if (!valid) {
+          return false;
+        }
+        const temp = Object.assign({}, this.temp, { id: this.id });
+        dockerUpdateContainer(temp).then((res) => {
+          if (res.code === 200) {
+            this.$notification.success({
+              message: res.msg,
+            });
+            this.editVisible = false;
+          }
+        });
+      });
     },
   },
 };

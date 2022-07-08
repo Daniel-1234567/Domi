@@ -32,6 +32,7 @@ import cn.hutool.core.io.LineHandler;
 import cn.hutool.core.io.file.FileCopier;
 import cn.hutool.core.lang.Tuple;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.thread.ExecutorBuilder;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.EnumUtil;
@@ -48,15 +49,20 @@ import io.jpom.model.enums.BuildReleaseMethod;
 import io.jpom.model.enums.BuildStatus;
 import io.jpom.model.enums.GitProtocolEnum;
 import io.jpom.model.log.BuildHistoryLog;
+import io.jpom.model.script.ScriptExecuteLogModel;
+import io.jpom.model.script.ScriptModel;
 import io.jpom.plugin.IPlugin;
 import io.jpom.plugin.PluginFactory;
 import io.jpom.service.dblog.BuildInfoService;
 import io.jpom.service.dblog.DbBuildHistoryLogService;
 import io.jpom.service.dblog.RepositoryService;
 import io.jpom.service.docker.DockerInfoService;
+import io.jpom.service.script.ScriptExecuteLogServer;
+import io.jpom.service.script.ScriptServer;
 import io.jpom.service.system.WorkspaceEnvVarService;
 import io.jpom.system.ConfigBean;
 import io.jpom.system.ExtConfigBean;
+import io.jpom.system.extconf.BuildExtConfig;
 import io.jpom.util.CommandUtil;
 import io.jpom.util.FileUtils;
 import io.jpom.util.LogRecorder;
@@ -70,13 +76,9 @@ import org.springframework.util.Assert;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -96,22 +98,62 @@ public class BuildExecuteService {
 
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
 
+    /**
+     * 构建线程池
+     */
+    private static ThreadPoolExecutor threadPoolExecutor;
+
     private final BuildInfoService buildService;
     private final DbBuildHistoryLogService dbBuildHistoryLogService;
     private final RepositoryService repositoryService;
     protected final DockerInfoService dockerInfoService;
     private final WorkspaceEnvVarService workspaceEnvVarService;
+    private final ScriptServer scriptServer;
+    private final ScriptExecuteLogServer scriptExecuteLogServer;
+    private final BuildExtConfig buildExtConfig;
 
     public BuildExecuteService(BuildInfoService buildService,
                                DbBuildHistoryLogService dbBuildHistoryLogService,
                                RepositoryService repositoryService,
                                DockerInfoService dockerInfoService,
-                               WorkspaceEnvVarService workspaceEnvVarService) {
+                               WorkspaceEnvVarService workspaceEnvVarService,
+                               ScriptServer scriptServer,
+                               ScriptExecuteLogServer scriptExecuteLogServer,
+                               BuildExtConfig buildExtConfig) {
         this.buildService = buildService;
         this.dbBuildHistoryLogService = dbBuildHistoryLogService;
         this.repositoryService = repositoryService;
         this.dockerInfoService = dockerInfoService;
         this.workspaceEnvVarService = workspaceEnvVarService;
+        this.scriptServer = scriptServer;
+        this.scriptExecuteLogServer = scriptExecuteLogServer;
+        this.buildExtConfig = buildExtConfig;
+    }
+
+    /**
+     * 创建构建线程池
+     */
+    private synchronized void initPool() {
+        if (threadPoolExecutor != null) {
+            return;
+        }
+        ExecutorBuilder executorBuilder = ExecutorBuilder.create();
+        int poolSize = buildExtConfig.getPoolSize();
+        if (poolSize > 0) {
+            executorBuilder.setCorePoolSize(poolSize).setMaxPoolSize(poolSize);
+        }
+        executorBuilder.useArrayBlockingQueue(Math.max(buildExtConfig.getPoolWaitQueue(), 1));
+        executorBuilder.setHandler(new ThreadPoolExecutor.DiscardPolicy() {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+                if (r instanceof BuildInfoManage) {
+                    // 取消任务
+                    BuildInfoManage buildInfoManage = (BuildInfoManage) r;
+                    buildInfoManage.rejectedExecution();
+                }
+            }
+        });
+        threadPoolExecutor = executorBuilder.build();
     }
 
     /**
@@ -187,18 +229,19 @@ public class BuildExecuteService {
         BuildExtraModule buildExtraModule = StringUtil.jsonConvert(buildInfoModel.getExtraData(), BuildExtraModule.class);
         Assert.notNull(buildExtraModule, "构建信息缺失");
         String logId = this.insertLog(buildExtraModule, taskData);
+        // 创建线程池
+        initPool();
         //
         BuildInfoManage.BuildInfoManageBuilder builder = BuildInfoManage.builder()
             .taskData(taskData)
             .logId(logId)
             .buildExtraModule(buildExtraModule)
-            .dbBuildHistoryLogService(dbBuildHistoryLogService)
             .buildExecuteService(this);
         BuildInfoManage build = builder.build();
         //BuildInfoManage manage = new BuildInfoManage(taskData);
         BUILD_MANAGE_MAP.put(buildInfoModel.getId(), build);
-        //
-        ThreadUtil.execAsync(build);
+        // 输出提交任务日志, 提交到线程池中
+        threadPoolExecutor.execute(build.submitTask());
     }
 
     /**
@@ -208,14 +251,10 @@ public class BuildExecuteService {
      * @return bool
      */
     public boolean cancelTask(String id) {
-        BuildInfoManage buildInfoManage = BUILD_MANAGE_MAP.get(id);
-        if (buildInfoManage == null) {
-            return false;
-        }
-        buildInfoManage.cancelTask();
-        this.updateStatus(buildInfoManage.taskData.buildInfoModel.getId(), buildInfoManage.logId, BuildStatus.Cancel);
-        BUILD_MANAGE_MAP.remove(id);
-        return true;
+        return Optional.ofNullable(BUILD_MANAGE_MAP.get(id)).map(buildInfoManage1 -> {
+            buildInfoManage1.cancelTask();
+            return true;
+        }).orElse(false);
     }
 
 
@@ -309,58 +348,57 @@ public class BuildExecuteService {
 
 
     @Builder
-    private static class BuildInfoManage implements Callable<Boolean> {
+    private static class BuildInfoManage implements Runnable {
 
         private final TaskData taskData;
         private final BuildExtraModule buildExtraModule;
         private final String logId;
         private final BuildExecuteService buildExecuteService;
-        private final DbBuildHistoryLogService dbBuildHistoryLogService;
         //
         private Process process;
         private LogRecorder logRecorder;
         private File gitFile;
         private Thread currentThread;
+        /**
+         * 提交任务时间
+         */
+        private Long submitTaskTime;
+
+        /**
+         * 提交任务
+         */
+        public BuildInfoManage submitTask() {
+            submitTaskTime = SystemClock.now();
+            BuildInfoModel buildInfoModel = taskData.buildInfoModel;
+            File logFile = BuildUtil.getLogFile(buildInfoModel.getId(), buildInfoModel.getBuildId());
+            this.logRecorder = LogRecorder.builder().file(logFile).build();
+            //
+            int queueSize = threadPoolExecutor.getQueue().size();
+            int size = BUILD_MANAGE_MAP.size();
+            logRecorder.info("当前构建中任务数：{},队列中任务数：{} {}", size, queueSize,
+                size > buildExecuteService.buildExtConfig.getPoolSize() ? "构建任务开始进入队列等待...." : StrUtil.EMPTY);
+            return this;
+        }
+
+        /**
+         * 取消任务(拒绝执行)
+         */
+        public void rejectedExecution() {
+            int queueSize = threadPoolExecutor.getQueue().size();
+            logRecorder.info("当前构建中任务数：{},队列中任务数：{} 构建任务等待超时或者超出最大等待数量,取消执行当前构建", BUILD_MANAGE_MAP.size(), queueSize);
+            this.cancelTask();
+        }
 
         /**
          * 取消任务
          */
         public void cancelTask() {
-            if (process != null) {
-                try {
-                    process.destroy();
-                } catch (Exception ignored) {
-                }
-            }
-            currentThread.interrupt();
-        }
+            Optional.ofNullable(process).ifPresent(Process::destroy);
+            Optional.ofNullable(currentThread).ifPresent(Thread::interrupt);
 
-        private List<String> antPathMatcher(File rootFile, String match) {
-            String matchStr = FileUtil.normalize(StrUtil.SLASH + match);
-            List<String> paths = new ArrayList<>();
-            //
-            FileUtil.walkFiles(rootFile.toPath(), new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    return this.test(file);
-                }
-
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes exc) throws IOException {
-                    return this.test(dir);
-                }
-
-                private FileVisitResult test(Path path) {
-                    String subPath = FileUtil.subPath(FileUtil.getAbsolutePath(rootFile), path.toFile());
-                    subPath = FileUtil.normalize(StrUtil.SLASH + subPath);
-                    if (ANT_PATH_MATCHER.match(matchStr, subPath)) {
-                        paths.add(subPath);
-                        //return FileVisitResult.TERMINATE;
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-            return paths;
+            String buildId = taskData.buildInfoModel.getId();
+            buildExecuteService.updateStatus(buildId, logId, BuildStatus.Cancel);
+            BUILD_MANAGE_MAP.remove(buildId);
         }
 
         /**
@@ -385,7 +423,7 @@ public class BuildExecuteService {
             boolean copyFile = true;
             if (ANT_PATH_MATCHER.isPattern(resultDirFile)) {
                 // 通配模式
-                List<String> paths = this.antPathMatcher(this.gitFile, resultDirFile);
+                List<String> paths = FileUtils.antPathMatcher(this.gitFile, resultDirFile);
                 int size = CollUtil.size(paths);
                 if (size <= 0) {
                     logRecorder.info(resultDirFile + " 没有匹配到任何文件");
@@ -430,7 +468,7 @@ public class BuildExecuteService {
             logRecorder.info(StrUtil.format("mv {} {}", resultDirFile, buildInfoModel.getBuildId()));
             // 修改构建产物目录
             if (updateDirFile) {
-                dbBuildHistoryLogService.updateResultDirFile(this.logId, resultDirFile);
+                buildExecuteService.dbBuildHistoryLogService.updateResultDirFile(this.logId, resultDirFile);
                 //
                 buildInfoModel.setResultDirFile(resultDirFile);
                 this.buildExtraModule.setResultDirFile(resultDirFile);
@@ -445,8 +483,6 @@ public class BuildExecuteService {
          */
         private boolean startReady() {
             BuildInfoModel buildInfoModel = taskData.buildInfoModel;
-            File logFile = BuildUtil.getLogFile(buildInfoModel.getId(), buildInfoModel.getBuildId());
-            this.logRecorder = LogRecorder.builder().file(logFile).build();
             this.gitFile = BuildUtil.getSourceById(buildInfoModel.getId());
 
             Integer delay = taskData.delay;
@@ -678,8 +714,9 @@ public class BuildExecuteService {
         }
 
         @Override
-        public Boolean call() {
+        public void run() {
             currentThread = Thread.currentThread();
+            logRecorder.info("开始执行构建任务,任务等待时间：{}", DateUtil.formatBetween(SystemClock.now() - submitTaskTime));
             // 初始化构建流程 准备->拉取代码->执行构建命令->打包发布
             Map<String, Supplier<Boolean>> suppliers = new LinkedHashMap<>(10);
             suppliers.put("startReady", BuildInfoManage.this::startReady);
@@ -720,7 +757,7 @@ public class BuildExecuteService {
                 long allTime = SystemClock.now() - startTime;
                 logRecorder.info("构建完成 耗时:" + DateUtil.formatBetween(allTime, BetweenFormatter.Level.SECOND));
                 this.asyncWebHooks("success");
-                return true;
+//                return true;
             } catch (RuntimeException runtimeException) {
                 buildExecuteService.updateStatus(taskData.buildInfoModel.getId(), this.logId, BuildStatus.Error);
                 Throwable cause = runtimeException.getCause();
@@ -732,10 +769,10 @@ public class BuildExecuteService {
                 this.asyncWebHooks(processName, "error", e.getMessage());
             } finally {
                 BUILD_MANAGE_MAP.remove(taskData.buildInfoModel.getId());
-                BaseServerController.removeAll();
                 this.asyncWebHooks("done");
+                BaseServerController.removeAll();
             }
-            return false;
+//            return false;
         }
 
 //		private void log(String title, Throwable throwable) {
@@ -750,7 +787,7 @@ public class BuildExecuteService {
          * @throws IOException IO
          */
         private boolean runCommand(String command) throws IOException, InterruptedException {
-            logRecorder.info(command);
+            logRecorder.info("[INFO] --- EXEC COMMAND {}", command);
             //
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.directory(this.gitFile);
@@ -779,7 +816,7 @@ public class BuildExecuteService {
                 status[0] = true;
             });
             int waitFor = process.waitFor();
-            logRecorder.info("process result " + waitFor);
+            logRecorder.info("[INFO] --- PROCESS RESULT " + waitFor);
             return status[0];
         }
 
@@ -796,7 +833,9 @@ public class BuildExecuteService {
             Map<String, Object> map = new HashMap<>(10);
             long triggerTime = SystemClock.now();
             map.put("buildId", buildInfoModel.getId());
+            map.put("buildNumberId", this.taskData.buildInfoModel.getBuildId());
             map.put("buildName", buildInfoModel.getName());
+            map.put("buildSourceFile", FileUtil.getAbsolutePath(this.gitFile));
             map.put("type", type);
             map.put("triggerBuildType", taskData.triggerBuildType);
             map.put("triggerTime", triggerTime);
@@ -811,7 +850,68 @@ public class BuildExecuteService {
                     log.error("WebHooks 调用错误", e);
                 }
             });
+            // 执行对应的事件脚本
+            try {
+                this.noticeScript(type, map);
+            } catch (Exception e) {
+                log.error("noticeScript 调用错误", e);
+            }
+        }
 
+        /**
+         * 执行事件脚本
+         *
+         * @param type 事件类型
+         * @param map  相关参数
+         * @throws Exception 异常
+         */
+        private void noticeScript(String type, Map<String, Object> map) throws Exception {
+            String noticeScriptId = this.buildExtraModule.getNoticeScriptId();
+            if (StrUtil.isEmpty(noticeScriptId)) {
+                return;
+            }
+            ScriptModel scriptModel = buildExecuteService.scriptServer.getByKey(noticeScriptId);
+            if (scriptModel == null) {
+                logRecorder.info("[WARNING] noticeScript does not exist:{}", type);
+                return;
+            }
+            // 判断是否包含需要执行的事件
+            if (!StrUtil.contains(scriptModel.getDescription(), type)) {
+                return;
+            }
+            logRecorder.info("[INFO] --- EXEC NOTICESCRIPT {}", type);
+            ScriptExecuteLogModel logModel = buildExecuteService.scriptExecuteLogServer.create(scriptModel, 1);
+            File logFile = scriptModel.logFile(logModel.getId());
+            try (LogRecorder scriptLog = LogRecorder.builder().file(logFile).build()) {
+                // 创建执行器
+                File scriptFile = scriptModel.scriptFile();
+                //
+                String script = FileUtil.getAbsolutePath(scriptFile);
+                ProcessBuilder processBuilder = new ProcessBuilder();
+                List<String> command = StrUtil.splitTrim(type, StrUtil.SPACE);
+                command.add(0, script);
+                CommandUtil.paddingPrefix(command);
+                log.debug(CollUtil.join(command, StrUtil.SPACE));
+                processBuilder.redirectErrorStream(true).command(command).directory(scriptFile.getParentFile());
+                // 环境变量
+                Map<String, String> environment = processBuilder.environment();
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
+                    Object value = entry.getValue();
+                    if (value == null) {
+                        continue;
+                    }
+                    environment.put(entry.getKey(), StrUtil.toStringOrNull(value));
+                }
+                Process process = processBuilder.start();
+                //
+                InputStream inputStream = process.getInputStream();
+                IoUtil.readLines(inputStream, ExtConfigBean.getInstance().getConsoleLogCharset(), (LineHandler) line -> {
+                    logRecorder.info(line);
+                    scriptLog.info(line);
+                });
+                int waitFor = process.waitFor();
+                logRecorder.info("[INFO] --- NOTICESCRIPT PROCESS RESULT " + waitFor);
+            }
         }
     }
 
