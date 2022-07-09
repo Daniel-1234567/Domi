@@ -53,9 +53,9 @@
 - I want to use some automation tools, but the performance of the server is too high and it is too troublesome to build.
 - I have individual needs for automation tools and want to modify the project myself, but the tools on the market are too complicated.
 
-> 如果是分布式的项目，以上步骤则更加繁琐。
+> If it is a distributed project, the above steps are more complicated.
 >
-> 让 Domi 来帮你解决这些痛点吧！然而，这些只是 Domi 解决的最基础的功能。
+> Let Domi help you solve these pain points! However, these are only the most basic functions that Domi addresses.
 
 ### 😁 After using [Domi](https://github.com/Daniel-1234567/Domi)
 
