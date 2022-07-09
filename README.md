@@ -1,45 +1,45 @@
-<p align="center">
-	<a href="https://jpom.io/"  target="_blank">
-	    <img src="https://jpom-docs.keepbx.cn/images/jpom_logo.png" width="400" alt="logo">
+<!-- <p align="center">
+	<a href="https://Domi.io/"  target="_blank">
+	    <img src="https://Domi-docs.keepbx.cn/images/Domi_logo.png" width="400" alt="logo">
 	</a>
-</p>
+</p> -->
 <p align="center">
 	<strong>Simple and lightweight low-intrusive online construction, automatic deployment, daily operation and maintenance, project monitoring software</strong>
 </p>
 
-<p align="center">
-	<a target="_blank" href="https://gitee.com/dromara/Jpom">
-        <img src='https://gitee.com/dromara/Jpom/badge/star.svg?theme=gvp' alt='gitee star'/>
+<!-- <p align="center">
+	<a target="_blank" href="https://github.com/Daniel-1234567/Domi">
+        <img src='https://github.com/Daniel-1234567/Domi/badge/star.svg?theme=gvp' alt='gitee star'/>
     </a>
- 	<a target="_blank" href="https://github.com/dromara/Jpom">
-		<img src="https://img.shields.io/github/stars/dromara/Jpom.svg?style=social" alt="github star"/>
+ 	<a target="_blank" href="https://github.com/dromara/Domi">
+		<img src="https://img.shields.io/github/stars/dromara/Domi.svg?style=social" alt="github star"/>
     </a>
-    <a target="_blank" href="https://gitee.com/dromara/Jpom">
-        <img src='https://img.shields.io/github/license/dromara/Jpom?style=flat' alt='license'/>
+    <a target="_blank" href="https://github.com/Daniel-1234567/Domi">
+        <img src='https://img.shields.io/github/license/dromara/Domi?style=flat' alt='license'/>
     </a>
-    <a target="_blank" href="https://gitee.com/dromara/Jpom">
+    <a target="_blank" href="https://github.com/Daniel-1234567/Domi">
         <img src='https://img.shields.io/badge/JDK-1.8.0_40+-green.svg' alt='jdk'/>
     </a>
 </p>
 
 <p align="center">
-    <a target="_blank" href="https://travis-ci.org/dromara/Jpom">
-        <img src='https://travis-ci.org/dromara/Jpom.svg?branch=master' alt='travis'/>
+    <a target="_blank" href="https://travis-ci.org/dromara/Domi">
+        <img src='https://travis-ci.org/dromara/Domi.svg?branch=master' alt='travis'/>
     </a>
-    <a target="_blank" href="https://www.codacy.com/gh/dromara/Jpom/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dromara/Jpom&amp;utm_campaign=Badge_Grade">
+    <a target="_blank" href="https://www.codacy.com/gh/dromara/Domi/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dromara/Domi&amp;utm_campaign=Badge_Grade">
       <img src="https://app.codacy.com/project/badge/Grade/843b953f1446449c9a075e44ea778336" alt="codacy"/>
     </a>
-	<a target="_blank" href="https://jpom-docs.keepbx.cn/images/wx-qrcode-praise.png">
-		<img src='https://img.shields.io/badge/%E5%BE%AE%E4%BF%A1%E7%BE%A4(%E8%AF%B7%E5%A4%87%E6%B3%A8%3AJpom)-jpom66-yellowgreen.svg' alt='jpom66 请备注jpom'/>
+	<a target="_blank" href="https://Domi-docs.keepbx.cn/images/wx-qrcode-praise.png">
+		<img src='https://img.shields.io/badge/%E5%BE%AE%E4%BF%A1%E7%BE%A4(%E8%AF%B7%E5%A4%87%E6%B3%A8%3ADomi)-Domi66-yellowgreen.svg' alt='Domi66 请备注Domi'/>
 	</a>
 </p>
 
 <p align="center">
-	👉 <a target="_blank" href="https://jpom.io/">https://jpom.io/</a> 👈
+	👉 <a target="_blank" href="https://Domi.io/">https://Domi.io/</a> 👈
 </p>
 <p align="center">
-	备用地址：<a target="_blank" href="https://jpom-docs.keepbx.cn">https://jpom-docs.keepbx.cn</a> | <a target="_blank" href="https://jpom.keepbx.cn/">https://jpom.keepbx.cn/</a>
-</p>
+	备用地址：<a target="_blank" href="https://Domi-docs.keepbx.cn">https://Domi-docs.keepbx.cn</a> | <a target="_blank" href="https://Domi.keepbx.cn/">https://Domi.keepbx.cn/</a>
+</p> -->
 
 ## 😭 Do you have the following pain points in daily development?
 
@@ -55,92 +55,92 @@
 
 > 如果是分布式的项目，以上步骤则更加繁琐。
 >
-> 让 Jpom 来帮你解决这些痛点吧！然而，这些只是 Jpom 解决的最基础的功能。
+> 让 Domi 来帮你解决这些痛点吧！然而，这些只是 Domi 解决的最基础的功能。
 
-### 😁 使用 [Jpom](https://gitee.com/dromara/Jpom) 后
+### 😁 After using [Domi](https://github.com/Daniel-1234567/Domi)
 
-1. 使用浏览器登录方便快捷管理项目
-2. 方便的用户管理
-    1. 用户操作监控，监控指定用户指定操作以邮件形式通知
-    2. 多用户管理，用户项目权限独立（上传、删除权限可控制），完善的操作日志，使用工作空间隔离权限
-    3. 账号可以开启 MFA 两步验证提高账号安全性
-3. 界面形式实时查看项目运行状态、控制台日志、管理项目文件
-    1. 在线修改项目文本文件
-4. docker 容器管理、docker swarm 集群管理
-5. 在线 SSH 终端，让您在没有 Xshell、FinalShell 等软件也能轻松管理服务器
-    1. 运维登录 Jpom 系统后不需要知道服务器密码
-    2. 能指定 SSH 禁止执行的命令，避免执行高风险命令，并且能自动执行命令日志
-    3. 设置文件目录，在线查看管理对应项目文件及配置文件
-    4. SSH 命令模版在线执行脚本还能定时执行
-    5. 在线修改文本文件
-    6. 轻量的实现了简单的"堡垒机"功能
-6. 使用项目分发一键搞定集群项目多机部署
-7. 在线构建不用手动更新升级项目
-    1. 支持拉取 GIT、SVN 仓库
-    2. 支持容器构建（docker）
-    3. 支持 SSH 方式发布
-    4. 支持定时构建
-    5. 支持 WebHook 形式触发构建
-8. 支持在线编辑 nginx 配置文件并自动 reload 等操作
-    1. 管理 nginx 状态，管理 SSL 证书
-9. 项目状态监控异常自动报警、自动尝试重启
-    1. 支持邮件 + 钉钉群 + 微信群通知，主动感知项目运行状况
-10. 节点脚本模版+定时执行，拓展更多可能
-11. 重要路径白名单模式，杜绝用户误操作系统文件
+1. Use a browser to log in to manage projects quickly and easily
+2. Convenient user management
+    1. User operation monitoring, monitoring designated user designated operation notification in the form of email
+    2. Multi-user management, independent user project permissions (upload and delete permissions can be controlled), perfect operation log, use workspace to isolate permissions
+    3. Accounts can enable MFA two-step verification to improve account security
+3. Real-time viewing of project running status, console log, and project file management in interface form
+    1. Modify the project text file online
+4. Docker container management, docker swarm cluster management
+5. Online SSH terminal, allowing you to easily manage the server without Xshell, FinalShell and other software
+    1. Operation and maintenance do not need to know the server password after logging in to the Domi system
+    2. Can specify commands that SSH prohibits to execute, avoid executing high-risk commands, and automatically execute command logs
+    3. Set the file directory, view and manage the corresponding project files and configuration files online
+    4. SSH command template online execution script can also be executed regularly
+    5. Modify text files online
+    6. Lightweight implementation of a simple "fortress machine" function
+6. Use project distribution to get cluster project multi-machine deployment with one click
+7. Online build does not need to manually update the upgrade project
+    1. Support pulling GIT and SVN repositories
+    2. Support container construction (docker)
+    3. Support SSH release
+    4. Support timing build
+    5. Support WebHook trigger build
+8. Support online editing of nginx configuration files and automatic reload operations
+    1. Manage nginx status, manage SSL certificates
+9. Automatic alarm for abnormal project status monitoring, automatic restart attempt
+    1. Support email + DingTalk group + WeChat group notification to actively perceive project operation status
+10. Node script template + timing execution, expand more possibilities
+11. Important path whitelist mode to prevent users from mistakenly operating system files
 
-### 🔔️ 特别提醒
+### 🔔️ Special Reminder
 
-> 1. 在 Windows 服务器中可能有部分功能因为系统特性造成兼容性问题，建议在实际使用中充分测试。Linux 目前兼容性良好
-> 2. 服务端和插件端请安装到不同目录中，切勿安装到同一目录中
-> 3. 卸载 Jpom 插件端或者服务端，先停止对应服务，然后删除对应的程序文件、日志文件夹、数据目录文件夹即可
-> 4. 本地构建依赖的是系统环境，如果构建命令需要使用 maven 或者 node 需要在构建项目的服务器安装好对应的环境。如果已经启动服务端再安装的对应环境需要通过命令行重启服务端后环境才会生效。
-> 5. 在 Ubuntu/Debian 服务器作为插件端可能会添加失败，请在当前用户的根目录创建 .bash_profile 文件
-> 6. 升级 2.7.x 后不建议降级操作，会涉及到数据不兼容的情况
-> 7. 由于目前 2.x.x 版本插件端和服务端主要采用 http 协议通讯，插件端和服务端网络要求互通，在使用的时候请注意。
-> 8. Jpom 3.0 版本已经开始规划更新了，尽请期待新版本的诞生吧
+> 1. Some functions in Windows server may cause compatibility problems due to system characteristics. It is recommended to fully test in actual use. Linux currently has good compatibility
+> 2. Please install the server and plug-in in different directories, not in the same directory
+> 3. To uninstall the Domi plug-in or server, stop the corresponding service first, and then delete the corresponding program files, log folders, and data directory folders.
+> 4. The local build depends on the system environment. If the build command needs to use maven or node, the corresponding environment needs to be installed on the server where the project is built. If the corresponding environment of the server has been started and then installed, the environment will take effect only after restarting the server through the command line.
+> 5. In Ubuntu/Debian server as the plugin side may fail to add, please create a .bash_profile file in the root directory of the current user
+> 6. Downgrade operation is not recommended after upgrading 2.7.x, it will involve data incompatibility
+> 7. Since the current 2.x.x version of the plug-in side and the server side mainly use the http protocol for communication, the plug-in side and the server side require network communication, please pay attention when using it.
+> 8. Domi 3.0 version has been planned to be updated, please look forward to the birth of the new version
 
-### 🗒️ [版本更新日志](https://gitee.com/dromara/Jpom/blob/master/CHANGELOG.md)
+<!-- ### 🗒️ [CHANGELOG](https://github.com/Daniel-1234567/Domi/blob/master/CHANGELOG.md)
 
-升级前必看：[CHANGELOG.md](https://gitee.com/dromara/Jpom/blob/master/CHANGELOG.md)
+升级前必看：[CHANGELOG.md](https://github.com/Daniel-1234567/Domi/blob/master/CHANGELOG.md) -->
 
-## 📥 安装 Jpom
+## 📥 Install Domi
 
-Jpom 支持多种安装方式，满足不同用户的个性化需求，您只需要选择一种方式安装即可。
+Domi supports a variety of installation methods to meet the individual needs of different users. You only need to choose one installation method.
 
-### 方式一：🚀（推荐） 一键安装（Linux）
+### Method 1: 🚀 (recommended) One-click installation (Linux)
 
-#### 一键安装服务端
+#### One-click server installation
 
-> **注意：安装的目录位于执行命令的目录！**
+> **NOTE: The installed directory is located in the directory where the command was executed!**
 >
-> ⚠️ 特别提醒：一键安装的时候注意执行命令不可在同一目录下，即 Server 端和 Agent 端不可安装在同一目录下！
+> ⚠️ Special reminder: When one-click installation, pay attention that the execution command cannot be in the same directory, that is, the server side and the agent side cannot be installed in the same directory!
 >
-> 如果需要修改服务端数据、日志存储的路径请修改 [`extConfig.yml`](https://gitee.com/dromara/Jpom/blob/master/modules/server/src/main/resources/bin/extConfig.yml) 文件中 `jpom.path` 配置属性。
+> If you need to modify the path of server data and log storage, please modify the  `Domi.path` parameter in [`extConfig.yml`](https://github.com/Daniel-1234567/Domi/blob/master/modules/server/src/main/resources/bin/extConfig.yml).
 
 ```shell
 # 仅安装服务端
 yum install -y wget && \
-	wget -O install.sh https://dromara.gitee.io/jpom/docs/install.sh && \
+	wget -O install.sh https://dromara.gitee.io/Domi/docs/install.sh && \
 	bash install.sh Server
 
 # 仅安装服务端，备用下载地址
 yum install -y wget && \
-	wget -O install.sh https://jpom-docs.keepbx.cn/docs/install.sh && \
+	wget -O install.sh https://Domi-docs.keepbx.cn/docs/install.sh && \
 	bash install.sh Server
 
 # 安装服务端和 jdk 环境
 yum install -y wget && \
-	wget -O install.sh https://dromara.gitee.io/jpom/docs/install.sh && \
+	wget -O install.sh https://dromara.gitee.io/Domi/docs/install.sh && \
 	bash install.sh Server jdk
 
 # 安装服务端和 jdk、maven 环境
 yum install -y wget && \
-	wget -O install.sh https://dromara.gitee.io/jpom/docs/install.sh && \
+	wget -O install.sh https://dromara.gitee.io/Domi/docs/install.sh && \
 	bash install.sh Server jdk+mvn
 
 # ubuntu
 apt install -y wget && \
-	wget -O install.sh https://dromara.gitee.io/jpom/docs/install.sh && \
+	wget -O install.sh https://dromara.gitee.io/Domi/docs/install.sh && \
 	bash install.sh Server jdk
 ```
 
@@ -165,27 +165,27 @@ apt install -y wget && \
 >
 > ⚠️ 特别提醒：一键安装的时候注意执行命令不可在同一目录下，即 Server 端和 Agent 端不可安装在同一目录下！
 >
-> 如果需要修改插件端数据、日志存储的路径请修改 [`extConfig.yml`](https://gitee.com/dromara/Jpom/blob/master/modules/agent/src/main/resources/bin/extConfig.yml) 文件中 `jpom.path` 配置属性。
+> 如果需要修改插件端数据、日志存储的路径请修改 [`extConfig.yml`](https://github.com/Daniel-1234567/Domi/blob/master/modules/agent/src/main/resources/bin/extConfig.yml) 文件中 `Domi.path` 配置属性。
 
 ```shell
 # 仅安装插件端
 yum install -y wget && \
-	wget -O install.sh https://dromara.gitee.io/jpom/docs/install.sh && \
+	wget -O install.sh https://dromara.gitee.io/Domi/docs/install.sh && \
 	bash install.sh Agent
 
 # 仅安装插件端，备用下载地址
 yum install -y wget && \
-	wget -O install.sh https://jpom-docs.keepbx.cn/docs/install.sh && \
+	wget -O install.sh https://Domi-docs.keepbx.cn/docs/install.sh && \
 	bash install.sh Agent
 
 # 安装插件端和 jdk 环境
 yum install -y wget && \
-	wget -O install.sh https://dromara.gitee.io/jpom/docs/install.sh && \
+	wget -O install.sh https://dromara.gitee.io/Domi/docs/install.sh && \
 	bash install.sh Agent jdk
 
 # ubuntu
 apt install -y wget && \
-	wget -O install.sh https://dromara.gitee.io/jpom/docs/install.sh && \
+	wget -O install.sh https://dromara.gitee.io/Domi/docs/install.sh && \
 	bash install.sh Agent jdk
 ```
 
@@ -193,42 +193,42 @@ apt install -y wget && \
 
 ### 方式二：📦 容器化安装
 
-> ⚠️ 注意：容器化安装方式需要先安装 docker，[点击跳转docker安装文档](https://jpom.io/pages/b63dc5/)
+> ⚠️ 注意：容器化安装方式需要先安装 docker，[点击跳转docker安装文档](https://Domi.io/pages/b63dc5/)
 
 
 #### 使用挂载方式存储相关数据（在部分环境可能出现兼容性问题）
 
 ```shell
-docker pull jpomdocker/jpom
-mkdir -p /home/jpom-server/log
-mkdir -p /home/jpom-server/data
+docker pull Domidocker/Domi
+mkdir -p /home/Domi-server/log
+mkdir -p /home/Domi-server/data
 docker run -d -p 2122:2122 \
-	--name jpom-server \
-	-v /home/jpom-server/log:/usr/local/jpom-server/log \
-	-v /home/jpom-server/data:/usr/local/jpom-server/data \
-	jpomdocker/jpom
+	--name Domi-server \
+	-v /home/Domi-server/log:/usr/local/Domi-server/log \
+	-v /home/Domi-server/data:/usr/local/Domi-server/data \
+	Domidocker/Domi
 ```
 
 #### 使用容器卷方式存储相关数据
 
 ```shell
-docker pull jpomdocker/jpom
-docker volume create jpom-server-data
-docker volume create jpom-server-log
+docker pull Domidocker/Domi
+docker volume create Domi-server-data
+docker volume create Domi-server-log
 docker run -d -p 2122:2122 \
-	--name jpom-server \
-	-v jpom-server-data:/usr/local/jpom-server/data \
-	-v jpom-server-log:/usr/local/jpom-server/log \
-	jpomdocker/jpom
+	--name Domi-server \
+	-v Domi-server-data:/usr/local/Domi-server/data \
+	-v Domi-server-log:/usr/local/Domi-server/log \
+	Domidocker/Domi
 ```
 
 > 容器化安装仅提供服务端版。由于容器和宿主机环境隔离，而导致插件端的很多功能无法正常使用，因此对插件端容器化意义不大。
 >
-> 安装docker、配置镜像、自动启动、查找安装后所在目录等可参考文档 [https://jpom.io/pages/b63dc5/](https://jpom.io/pages/b63dc5/)
+> 安装docker、配置镜像、自动启动、查找安装后所在目录等可参考文档 [https://Domi.io/pages/b63dc5/](https://Domi.io/pages/b63dc5/)
 
 ### 方式三：💾 下载安装
 
-1. 下载安装包 [https://gitee.com/dromara/Jpom/attach_files](https://gitee.com/dromara/Jpom/attach_files)
+1. 下载安装包 [https://github.com/Daniel-1234567/Domi/attach_files](https://github.com/Daniel-1234567/Domi/attach_files)
 2. 解压文件
 3. 安装插件端
     1. agent-x.x.x-release 目录为插件端的全部安装文件
@@ -244,7 +244,7 @@ docker run -d -p 2122:2122 \
 ### 方式四：⌨️ 编译安装
 
 
-1. 访问 [Jpom](https://gitee.com/dromara/Jpom) 的码云主页，拉取最新完整代码（建议使用 master 分支）
+1. 访问 [Domi](https://github.com/Daniel-1234567/Domi) 的码云主页，拉取最新完整代码（建议使用 master 分支）
 2. 切换到 `web-vue` 目录，执行 `npm install`（vue 环境需要提前搭建和安装依赖包详情可以查看 web-vue 目录下 README.md）
 3. 执行 `npm run build` 进行 vue 项目打包
 4. 切换到项目根目录执行：`mvn clean package`
@@ -269,27 +269,27 @@ docker run -d -p 2122:2122 \
 
 ```shell
 yum install -y git
-git clone https://gitee.com/dromara/Jpom.git
-cd Jpom
+git clone https://github.com/Daniel-1234567/Domi.git
+cd Domi
 docker-compose up
 ```
 
 ### 方式六：💻 编译运行
 
-1. 访问 [Jpom](https://gitee.com/dromara/Jpom) 的码云主页，拉取最新完整代码（建议使用 master 分支，如果想体验新功能可以使用 dev 分支）
+1. 访问 [Domi](https://github.com/Daniel-1234567/Domi) 的码云主页，拉取最新完整代码（建议使用 master 分支，如果想体验新功能可以使用 dev 分支）
 2. 运行插件端
-    1. 运行 `io.jpom.JpomAgentApplication`
+    1. 运行 `io.Domi.DomiAgentApplication`
     2. 留意控制台打印的默认账号密码信息
     3. 插件端默认运行端口：`2123`
 3. 运行服务端
-    1. 运行 `io.jpom.JpomServerApplication`
+    1. 运行 `io.Domi.DomiServerApplication`
     2. 服务端默认运行端口：`2122`
 4. 构建 vue 页面，切换到 `web-vue` 目录（前提需要本地开发环境有 node、npm 环境）
 5. 安装项目 vue 依赖，控制台执行 `npm install`
 6. 启动开发模式，控制台执行 `npm run serve`
 7. 根据控制台输出的地址访问前端页面：`http://127.0.0.1:3000/`（非本机访问把 127.0.0.1 换成你的服务器 IP 地址）
 
-## 管理 Jpom 命令
+## 管理 Domi 命令
 
 1. Windows 系统使用 bat 脚本文件。
 
@@ -307,18 +307,18 @@ Agent.bat
 
 ```
 # 服务端
-Server.sh start     启动Jpom服务端
-Server.sh stop      停止Jpom服务端
-Server.sh restart   重启Jpom服务端
-Server.sh status    查看Jpom服务端运行状态
-Server.sh create    创建Jpom服务端的应用服务（jpom-server）
+Server.sh start     启动Domi服务端
+Server.sh stop      停止Domi服务端
+Server.sh restart   重启Domi服务端
+Server.sh status    查看Domi服务端运行状态
+Server.sh create    创建Domi服务端的应用服务（Domi-server）
 
 # 插件端
-Agent.sh start     启动Jpom插件端
-Agent.sh stop      停止Jpom插件端
-Agent.sh restart   重启Jpom插件端
-Agent.sh status    查看Jpom插件端运行状态
-Agent.sh create    创建Jpom插件端的应用服务（jpom-agent）
+Agent.sh start     启动Domi插件端
+Agent.sh stop      停止Domi插件端
+Agent.sh restart   重启Domi插件端
+Agent.sh status    查看Domi插件端运行状态
+Agent.sh create    创建Domi插件端的应用服务（Domi-agent）
 ```
 
 ## Linux 服务方式管理
@@ -327,24 +327,24 @@ Agent.sh create    创建Jpom插件端的应用服务（jpom-agent）
 
 > 在使用 `Server.sh create`/`Agent.sh create` 成功后
 >
-> service jpom-server {status | start | stop}
+> service Domi-server {status | start | stop}
 >
-> service jpom-agent {status | start | stop}
+> service Domi-agent {status | start | stop}
 
-## ⚙️ Jpom 的参数配置
+## ⚙️ Domi 的参数配置
 
 在项目运行的根路径下的 `extConfig.yml` 文件
 
-1. 插件端示例：[`extConfig.yml`](https://gitee.com/dromara/Jpom/blob/master/modules/agent/src/main/resources/bin/extConfig.yml)
-2. 服务端示例：[`extConfig.yml`](https://gitee.com/dromara/Jpom/blob/master/modules/server/src/main/resources/bin/extConfig.yml)
+1. 插件端示例：[`extConfig.yml`](https://github.com/Daniel-1234567/Domi/blob/master/modules/agent/src/main/resources/bin/extConfig.yml)
+2. 服务端示例：[`extConfig.yml`](https://github.com/Daniel-1234567/Domi/blob/master/modules/server/src/main/resources/bin/extConfig.yml)
 
 ## 💻 演示项目
 
-[https://jpom.keepbx.cn](https://jpom.keepbx.cn)
+[https://Domi.keepbx.cn](https://Domi.keepbx.cn)
 
 ```   
 账号：demo
-密码：jpom123
+密码：Domi123
 ```
 
 > 演示系统有部分功能做了限制，完整功能请自行部署体验
@@ -353,11 +353,11 @@ Agent.sh create    创建Jpom插件端的应用服务（jpom-agent）
 
 ### 构建案例仓库代码
 
-1. [Jboot 案例代码](https://gitee.com/keepbx/Jpom-demo-case/tree/master/jboot-test)
-2. [SpringBoot 案例代码(ClassPath)](https://gitee.com/keepbx/Jpom-demo-case/tree/master/springboot-test)
-3. [SpringBoot 案例代码(Jar)](https://gitee.com/keepbx/Jpom-demo-case/tree/master/springboot-test-jar)
-4. [node vue 案例代码(antdv)](https://gitee.com/keepbx/Jpom-demo-case/tree/master/antdv)
-5. [python 案例代码](https://gitee.com/keepbx/Jpom-demo-case/tree/master/python)
+1. [Jboot 案例代码](https://gitee.com/keepbx/Domi-demo-case/tree/master/jboot-test)
+2. [SpringBoot 案例代码(ClassPath)](https://gitee.com/keepbx/Domi-demo-case/tree/master/springboot-test)
+3. [SpringBoot 案例代码(Jar)](https://gitee.com/keepbx/Domi-demo-case/tree/master/springboot-test-jar)
+4. [node vue 案例代码(antdv)](https://gitee.com/keepbx/Domi-demo-case/tree/master/antdv)
+5. [python 案例代码](https://gitee.com/keepbx/Domi-demo-case/tree/master/python)
 
 > nodejs 编译指定目录：
 
@@ -376,43 +376,43 @@ mvn -f xxxx/pom.xml clean package
 
 ### Github Pages
 
-- [文档主页](https://jpom.io/)
-- [FQA](https://jpom.io/pages/FQA/)
-- [名词解释](https://jpom.io/pages/FQA/proper-noun/)
+- [文档主页](https://Domi.io/)
+- [FQA](https://Domi.io/pages/FQA/)
+- [名词解释](https://Domi.io/pages/FQA/proper-noun/)
 
 ### Gitee Pages
 
-- [文档主页](https://jpom-docs.keepbx.cn/)
-- [FQA](https://jpom-docs.keepbx.cn/pages/FQA/)
-- [名词解释](https://jpom-docs.keepbx.cn/pages/FQA/proper-noun/)
+- [文档主页](https://Domi-docs.keepbx.cn/)
+- [FQA](https://Domi-docs.keepbx.cn/pages/FQA/)
+- [名词解释](https://Domi-docs.keepbx.cn/pages/FQA/proper-noun/)
 
 ### 实践案例
 
 > 里面有部分图片加载可能比较慢
 
-1. [本地构建 + SSH 发布 java 项目](https://jpom.io/pages/practice/build-java-ssh-release)
-2. [本地构建 + 项目发布 node 项目](https://jpom.io/pages/practice/build-node-release)
-3. [本地构建 + SSH 发布 node 项目](https://jpom.io/pages/practice/build-node-ssh-release)
-4. [本地构建 + 自定义管理 python 项目](https://jpom.io/pages/practice/project-dsl-python)
-5. [自定义管理 java 项目](https://jpom.io/pages/practice/project-dsl-java)
-6. [管理编译安装的 nginx](https://jpom.io/pages/practice/node-nginx)
-7. [管理 docker](https://jpom.io/pages/practice/docker-cli)
-8. [容器构建 + 项目发布 java 项目](https://jpom.io/pages/practice/build-docker-java-node-release)
+1. [本地构建 + SSH 发布 java 项目](https://Domi.io/pages/practice/build-java-ssh-release)
+2. [本地构建 + 项目发布 node 项目](https://Domi.io/pages/practice/build-node-release)
+3. [本地构建 + SSH 发布 node 项目](https://Domi.io/pages/practice/build-node-ssh-release)
+4. [本地构建 + 自定义管理 python 项目](https://Domi.io/pages/practice/project-dsl-python)
+5. [自定义管理 java 项目](https://Domi.io/pages/practice/project-dsl-java)
+6. [管理编译安装的 nginx](https://Domi.io/pages/practice/node-nginx)
+7. [管理 docker](https://Domi.io/pages/practice/docker-cli)
+8. [容器构建 + 项目发布 java 项目](https://Domi.io/pages/practice/build-docker-java-node-release)
 
 ## 🛠️ 整体架构
 
-![jpom-func-arch](https://jpom-docs.keepbx.cn/images/jpom-func-arch.jpg)
+![Domi-func-arch](https://Domi-docs.keepbx.cn/images/Domi-func-arch.jpg)
 
 ## 🔨贡献指南
 
 ### 贡献须知
 
-Jpom 作为开源项目，离不开社区的支持，欢迎任何人修改和提出建议。贡献无论大小，你的贡献会帮助背后成千上万的使用者以及开发者，你做出的贡献也会永远的保留在项目的贡献者名单中，这也是开源项目的意义所在！
+Domi 作为开源项目，离不开社区的支持，欢迎任何人修改和提出建议。贡献无论大小，你的贡献会帮助背后成千上万的使用者以及开发者，你做出的贡献也会永远的保留在项目的贡献者名单中，这也是开源项目的意义所在！
 
 为了保证项目代码的质量与规范，以及帮助你更快的了解项目的结构，请在贡献之前阅读：
 
-- [Jpom 贡献说明](https://gitee.com/dromara/Jpom/blob/master/CONTRIBUTING.md)
-- [中英文排版规范](https://gitee.com/dromara/Jpom/blob/dev/typography-specification.md)
+- [Domi 贡献说明](https://github.com/Daniel-1234567/Domi/blob/master/CONTRIBUTING.md)
+- [中英文排版规范](https://github.com/Daniel-1234567/Domi/blob/dev/typography-specification.md)
 
 ### 贡献步骤
 
@@ -425,7 +425,7 @@ Jpom 作为开源项目，离不开社区的支持，欢迎任何人修改和提
    如果是贡献代码，分支名填 `dev`；如果是贡献文档，分支名填 `docs`
    
    ```bash
-   git clone -b 分支名 https://gitee.com/用户名/Jpom.git
+   git clone -b 分支名 https://gitee.com/用户名/Domi.git
    ```
 
 3. 修改代码/文档，修改后提交上来。
@@ -454,15 +454,15 @@ Jpom 作为开源项目，离不开社区的支持，欢迎任何人修改和提
 
 ## 🐞 交流讨论 、反馈 BUG、提出建议等
 
-1. 快扫描下方左侧微信群二维码和我们一起交流讨论吧！（添加小助手：备注 Jpom 进群）
-2. 开源项目离不开社区的支持，如果项目帮助到了你，并且想给我们加个餐，欢迎扫描下方右侧[微信收款码赞赏](https://jpom-docs.keepbx.cn/images/wx-qrcode-praise.png)或通过[码云赞赏](https://gitee.com/dromara/Jpom)（在项目首页下方点击捐赠，支持微信和支付宝）。[赞赏记录](https://jpom-docs.keepbx.cn/docs/index.html#/praise)
-3. 微信公众号：[CodeGzh](https://jpom-docs.keepbx.cn/images/CodeGzh-QrCode.jpg) 查看一些基础教程
-4. 反馈 BUG、提出建议，欢迎新建：[issues](https://gitee.com/dromara/Jpom/issues)，开发人员会不定时查看回复。
+1. 快扫描下方左侧微信群二维码和我们一起交流讨论吧！（添加小助手：备注 Domi 进群）
+2. 开源项目离不开社区的支持，如果项目帮助到了你，并且想给我们加个餐，欢迎扫描下方右侧[微信收款码赞赏](https://Domi-docs.keepbx.cn/images/wx-qrcode-praise.png)或通过[码云赞赏](https://github.com/Daniel-1234567/Domi)（在项目首页下方点击捐赠，支持微信和支付宝）。[赞赏记录](https://Domi-docs.keepbx.cn/docs/index.html#/praise)
+3. 微信公众号：[CodeGzh](https://Domi-docs.keepbx.cn/images/CodeGzh-QrCode.jpg) 查看一些基础教程
+4. 反馈 BUG、提出建议，欢迎新建：[issues](https://github.com/Daniel-1234567/Domi/issues)，开发人员会不定时查看回复。
 6. 参与贡献，请查看[贡献指南](#🔨贡献指南)。
 
 感谢所有赞赏以及参与贡献的小伙伴，你们的支持是我们不断更新前进的动力！
 
-![wx-qrcode-praise.png](https://jpom-docs.keepbx.cn/images/wx-qrcode-praise.png)
+![wx-qrcode-praise.png](https://Domi-docs.keepbx.cn/images/wx-qrcode-praise.png)
 
 ## 🔔 精品项目推荐
 
