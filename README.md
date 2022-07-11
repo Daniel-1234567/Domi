@@ -144,9 +144,9 @@ apt install -y wget && \
 	bash install.sh Server jdk
 ```
 
-启动成功后，服务端的端口为 `2122`，可通过 `http://127.0.0.1:2122/` 访问管理页面（如果不是本机访问，需要把 127.0.0.1 换成你安装的服务器 IP 地址）。
+After the startup is successful, the port of the server is `2122`, and you can access the management page through `http://127.0.0.1:2122/` (if it is not accessed locally, you need to replace 127.0.0.1 with the IP address of the server you installed) .
 
->如无法访问管理系统，执行命令 `systemctl status firewalld` 检查下是否开启了防火墙 ，如状态栏看到绿色显示 `Active: active (running)` 需要放行 `2122` 端口。
+>If you cannot access the management system, run the command `systemctl status firewalld` to check whether the firewall is enabled. If the status bar sees a green display of `Active: active (running)`, you need to release the `2122` port.
 >
 >```bash
 ># 放行管理系统的 2122 端口
